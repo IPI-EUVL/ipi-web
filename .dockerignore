@@ -1,0 +1,12 @@
+*
+!apps/
+!apps/webview/
+!apps/webview/frontend/
+!apps/webview/frontend/**
+!infrastructure/
+!infrastructure/nginx/
+!infrastructure/nginx/**
+apps/webview/frontend/node_modules/
+apps/webview/frontend/dist/
+apps/webview/frontend/playwright-report/
+apps/webview/frontend/test-results/

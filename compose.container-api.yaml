@@ -1,0 +1,57 @@
+services:
+  edge:
+    build:
+      args:
+        API_UPSTREAM: live-api:8000
+    depends_on:
+      live-api:
+        condition: service_healthy
+
+  live-api:
+    build:
+      context: ./apps/webview
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    user: "${API_UID:-1000}:${API_GID:-1000}"
+    environment:
+      WEBVIEW_ECS_HOST: "${ECS_HOST}"
+      WEBVIEW_DATA_PATH: /data
+      WEBVIEW_LOG_PATH: /logs
+      WEBVIEW_CRITICAL_SUBSYSTEMS: "${WEBVIEW_CRITICAL_SUBSYSTEMS:-exposure,queue,oscilloscope,sample_motion,target,laser}"
+      WEBVIEW_LIVE_STALE_AFTER: "${WEBVIEW_LIVE_STALE_AFTER:-10}"
+      WEBVIEW_HISTORY_STALE_AFTER: "${WEBVIEW_HISTORY_STALE_AFTER:-15}"
+      WEBVIEW_SSE_HEARTBEAT_INTERVAL: "${WEBVIEW_SSE_HEARTBEAT_INTERVAL:-15}"
+      WEBVIEW_DOCS_ENABLED: "${WEBVIEW_DOCS_ENABLED:-false}"
+      WEBVIEW_TRUSTED_HOSTS: "${WEBVIEW_TRUSTED_HOSTS:-live.ipi.illinois.edu,localhost,127.0.0.1}"
+    volumes:
+      - type: bind
+        source: "${DATASET_HOST_PATH:?Set DATASET_HOST_PATH in .env}"
+        target: /data
+      - type: bind
+        source: "${LOG_HOST_PATH:?Set LOG_HOST_PATH in .env}"
+        target: /logs
+        read_only: true
+    expose:
+      - "8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - web
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/live', timeout=3)",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s

@@ -1,0 +1,4559 @@
+{
+  "components": {
+    "schemas": {
+      "BatchExposureSummary": {
+        "properties": {
+          "actual_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Dose"
+          },
+          "actual_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Time"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "end_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Reason"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "queue_position": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Queue Position"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "sample_number": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Number"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "target_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Dose"
+          },
+          "target_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Time"
+          }
+        },
+        "required": [
+          "run_id",
+          "created_at",
+          "name",
+          "target_dose",
+          "target_time",
+          "actual_dose",
+          "actual_time",
+          "state",
+          "status",
+          "end_reason"
+        ],
+        "title": "BatchExposureSummary",
+        "type": "object"
+      },
+      "BatchPlanEntrySummary": {
+        "properties": {
+          "attempt_count": {
+            "minimum": 0.0,
+            "title": "Attempt Count",
+            "type": "integer"
+          },
+          "cumulative_actual": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cumulative Actual"
+          },
+          "mode": {
+            "title": "Mode",
+            "type": "string"
+          },
+          "order": {
+            "minimum": 1.0,
+            "title": "Order",
+            "type": "integer"
+          },
+          "overshoot": {
+            "minimum": 0.0,
+            "title": "Overshoot",
+            "type": "number"
+          },
+          "remainder": {
+            "minimum": 0.0,
+            "title": "Remainder",
+            "type": "number"
+          },
+          "sample_number": {
+            "minimum": 1.0,
+            "title": "Sample Number",
+            "type": "integer"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          },
+          "target": {
+            "minimum": 0.0,
+            "title": "Target",
+            "type": "number"
+          }
+        },
+        "required": [
+          "order",
+          "sample_number",
+          "mode",
+          "target",
+          "cumulative_actual",
+          "attempt_count",
+          "state",
+          "remainder",
+          "overshoot"
+        ],
+        "title": "BatchPlanEntrySummary",
+        "type": "object"
+      },
+      "BatchSlotSummary": {
+        "properties": {
+          "abort_reasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Abort Reasons",
+            "type": "array"
+          },
+          "attempt_count": {
+            "minimum": 0.0,
+            "title": "Attempt Count",
+            "type": "integer"
+          },
+          "cumulative_actual_dose": {
+            "title": "Cumulative Actual Dose",
+            "type": "number"
+          },
+          "cumulative_actual_time": {
+            "title": "Cumulative Actual Time",
+            "type": "number"
+          },
+          "first_target_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Target Dose"
+          },
+          "first_target_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Target Time"
+          },
+          "sample_number": {
+            "minimum": 1.0,
+            "title": "Sample Number",
+            "type": "integer"
+          },
+          "state": {
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sample_number",
+          "attempt_count",
+          "first_target_dose",
+          "first_target_time",
+          "cumulative_actual_dose",
+          "cumulative_actual_time",
+          "state",
+          "abort_reasons"
+        ],
+        "title": "BatchSlotSummary",
+        "type": "object"
+      },
+      "BatchSummary": {
+        "properties": {
+          "authoritative": {
+            "default": false,
+            "title": "Authoritative",
+            "type": "boolean"
+          },
+          "batch_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Id"
+          },
+          "cancel_pending": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancel Pending"
+          },
+          "controller_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Controller Message"
+          },
+          "controller_phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Controller Phase"
+          },
+          "decision_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Kind"
+          },
+          "decision_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Message"
+          },
+          "execution_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Mode"
+          },
+          "exposures": {
+            "items": {
+              "$ref": "#/components/schemas/BatchExposureSummary"
+            },
+            "title": "Exposures",
+            "type": "array"
+          },
+          "lease_owned": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lease Owned"
+          },
+          "manifest_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manifest Status"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "paused": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paused"
+          },
+          "plan_entries": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/BatchPlanEntrySummary"
+            },
+            "title": "Plan Entries",
+            "type": "array"
+          },
+          "possibly_truncated": {
+            "title": "Possibly Truncated",
+            "type": "boolean"
+          },
+          "remaining_count": {
+            "minimum": 0.0,
+            "title": "Remaining Count",
+            "type": "integer"
+          },
+          "revision": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revision"
+          },
+          "selection_source": {
+            "title": "Selection Source",
+            "type": "string"
+          },
+          "slots": {
+            "items": {
+              "$ref": "#/components/schemas/BatchSlotSummary"
+            },
+            "title": "Slots",
+            "type": "array"
+          },
+          "unplaced_exposures": {
+            "items": {
+              "$ref": "#/components/schemas/BatchExposureSummary"
+            },
+            "title": "Unplaced Exposures",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "selection_source",
+          "exposures",
+          "slots",
+          "unplaced_exposures",
+          "remaining_count",
+          "possibly_truncated"
+        ],
+        "title": "BatchSummary",
+        "type": "object"
+      },
+      "CameraSummary": {
+        "properties": {
+          "configured": {
+            "title": "Configured",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "configured"
+        ],
+        "title": "CameraSummary",
+        "type": "object"
+      },
+      "CamerasResponse": {
+        "properties": {
+          "items": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/CameraSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "title": "CamerasResponse",
+        "type": "object"
+      },
+      "ExperimentDataIssueResponse": {
+        "properties": {
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "resource_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resource Name"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          }
+        },
+        "required": [
+          "section",
+          "resource_name",
+          "kind",
+          "message"
+        ],
+        "title": "ExperimentDataIssueResponse",
+        "type": "object"
+      },
+      "ExperimentDetailResponse": {
+        "properties": {
+          "end_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Metadata"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentDataIssueResponse"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "log_range": {
+            "$ref": "#/components/schemas/LogRangeResponse"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "title": "Metadata",
+            "type": "object"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/ExperimentMetricsResponse"
+          },
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/RegisteredResourceResponse"
+            },
+            "title": "Resources",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "settings": {
+            "additionalProperties": true,
+            "title": "Settings",
+            "type": "object"
+          },
+          "snapshots": {
+            "items": {
+              "$ref": "#/components/schemas/SnapshotResponse"
+            },
+            "title": "Snapshots",
+            "type": "array"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ExperimentListItemResponse"
+          },
+          "tags": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "title": "Tags",
+            "type": "object"
+          }
+        },
+        "required": [
+          "summary",
+          "settings",
+          "metadata",
+          "end_metadata",
+          "tags",
+          "resources",
+          "snapshots",
+          "metrics",
+          "log_range",
+          "issues"
+        ],
+        "title": "ExperimentDetailResponse",
+        "type": "object"
+      },
+      "ExperimentDetails": {
+        "properties": {
+          "base_pressure": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Pressure"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "flow_sccm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flow Sccm"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "operating_pressure": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operating Pressure"
+          },
+          "operator": {
+            "title": "Operator",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "sample_number": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Number"
+          },
+          "sample_type": {
+            "title": "Sample Type",
+            "type": "string"
+          },
+          "target_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Dose"
+          },
+          "target_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Time"
+          },
+          "zr_filter": {
+            "title": "Zr Filter",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "name",
+          "description",
+          "operator",
+          "zr_filter",
+          "sample_type",
+          "target_dose",
+          "target_time",
+          "base_pressure",
+          "operating_pressure",
+          "flow_sccm"
+        ],
+        "title": "ExperimentDetails",
+        "type": "object"
+      },
+      "ExperimentFilterOptionsResponse": {
+        "properties": {
+          "actual_dose_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Dose Max"
+          },
+          "actual_dose_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Dose Min"
+          },
+          "created_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created Max"
+          },
+          "created_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created Min"
+          },
+          "operators": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Operators",
+            "type": "array"
+          },
+          "runtime_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime Max"
+          },
+          "runtime_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime Min"
+          },
+          "samples": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Samples",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "target_dose_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Dose Max"
+          },
+          "target_dose_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Dose Min"
+          },
+          "zr_filters": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Zr Filters",
+            "type": "array"
+          }
+        },
+        "required": [
+          "samples",
+          "operators",
+          "zr_filters",
+          "actual_dose_min",
+          "actual_dose_max",
+          "target_dose_min",
+          "target_dose_max",
+          "runtime_min",
+          "runtime_max",
+          "created_min",
+          "created_max"
+        ],
+        "title": "ExperimentFilterOptionsResponse",
+        "type": "object"
+      },
+      "ExperimentFiltersResponse": {
+        "properties": {
+          "created_max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created Max"
+          },
+          "created_min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created Min"
+          },
+          "max_actual_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Actual Dose"
+          },
+          "max_runtime": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Runtime"
+          },
+          "max_target_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Target Dose"
+          },
+          "min_actual_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Actual Dose"
+          },
+          "min_runtime": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Runtime"
+          },
+          "min_target_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Target Dose"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "operator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operator"
+          },
+          "sample": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample"
+          },
+          "zr_filter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zr Filter"
+          }
+        },
+        "required": [
+          "name",
+          "created_min",
+          "created_max",
+          "min_actual_dose",
+          "max_actual_dose",
+          "min_target_dose",
+          "max_target_dose",
+          "min_runtime",
+          "max_runtime",
+          "zr_filter",
+          "sample",
+          "operator"
+        ],
+        "title": "ExperimentFiltersResponse",
+        "type": "object"
+      },
+      "ExperimentListItemResponse": {
+        "properties": {
+          "actual_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Dose"
+          },
+          "blank_thickness_nm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blank Thickness Nm"
+          },
+          "created_at": {
+            "title": "Created At",
+            "type": "number"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "effective_dose_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Dose Rate"
+          },
+          "end_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Reason"
+          },
+          "exposed_thickness_nm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exposed Thickness Nm"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "operator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operator"
+          },
+          "percent_development": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percent Development"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "runtime": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime"
+          },
+          "sample": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "target_dose": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Dose"
+          },
+          "target_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Time"
+          },
+          "zr_filter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zr Filter"
+          }
+        },
+        "required": [
+          "run_id",
+          "created_at",
+          "name",
+          "description",
+          "sample",
+          "operator",
+          "zr_filter",
+          "target_dose",
+          "target_time",
+          "actual_dose",
+          "runtime",
+          "effective_dose_rate",
+          "exposed_thickness_nm",
+          "blank_thickness_nm",
+          "percent_development",
+          "status",
+          "end_reason"
+        ],
+        "title": "ExperimentListItemResponse",
+        "type": "object"
+      },
+      "ExperimentMetricsResponse": {
+        "properties": {
+          "blank_average_nm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blank Average Nm"
+          },
+          "degraded": {
+            "title": "Degraded",
+            "type": "boolean"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "exposed_average_nm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exposed Average Nm"
+          },
+          "measurements": {
+            "items": {
+              "$ref": "#/components/schemas/MetricMeasurementResponse"
+            },
+            "title": "Measurements",
+            "type": "array"
+          },
+          "percent_development": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percent Development"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "measurements",
+          "exposed_average_nm",
+          "blank_average_nm",
+          "percent_development",
+          "degraded",
+          "error"
+        ],
+        "title": "ExperimentMetricsResponse",
+        "type": "object"
+      },
+      "ExperimentPageResponse": {
+        "properties": {
+          "filters": {
+            "$ref": "#/components/schemas/ExperimentFiltersResponse"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentListItemResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "minimum": 1.0,
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "minimum": 1.0,
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "total_count": {
+            "minimum": 0.0,
+            "title": "Total Count",
+            "type": "integer"
+          },
+          "total_pages": {
+            "minimum": 0.0,
+            "title": "Total Pages",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "page",
+          "page_size",
+          "total_count",
+          "total_pages",
+          "filters",
+          "items"
+        ],
+        "title": "ExperimentPageResponse",
+        "type": "object"
+      },
+      "ExperimentReason": {
+        "properties": {
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "subsystem": {
+            "title": "Subsystem",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subsystem",
+          "status",
+          "reason"
+        ],
+        "title": "ExperimentReason",
+        "type": "object"
+      },
+      "ExperimentResourcesResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RegisteredResourceResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "items"
+        ],
+        "title": "ExperimentResourcesResponse",
+        "type": "object"
+      },
+      "ExperimentSummary": {
+        "properties": {
+          "details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExperimentDetails"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "phase": {
+            "$ref": "#/components/schemas/PublicExperimentPhase"
+          },
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentReason"
+            },
+            "title": "Reasons",
+            "type": "array"
+          }
+        },
+        "required": [
+          "phase",
+          "details",
+          "reasons"
+        ],
+        "title": "ExperimentSummary",
+        "type": "object"
+      },
+      "ExposureEventResponse": {
+        "properties": {
+          "capture_session_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capture Session Id"
+          },
+          "event_id": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "ingest_unix_ns": {
+            "minimum": 0.0,
+            "title": "Ingest Unix Ns",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "next_sequence": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Sequence"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "producer_monotonic_ns": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Producer Monotonic Ns"
+          },
+          "producer_unix_ns": {
+            "minimum": 0.0,
+            "title": "Producer Unix Ns",
+            "type": "integer"
+          },
+          "runtime_seconds": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime Seconds"
+          },
+          "sequence": {
+            "minimum": 0.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "stream_id": {
+            "format": "uuid",
+            "title": "Stream Id",
+            "type": "string"
+          },
+          "stream_name": {
+            "title": "Stream Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "stream_id",
+          "stream_name",
+          "sequence",
+          "kind",
+          "producer_unix_ns",
+          "ingest_unix_ns",
+          "payload"
+        ],
+        "title": "ExposureEventResponse",
+        "type": "object"
+      },
+      "ExposureEventTimelineResponse": {
+        "properties": {
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ExposureEventResponse"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "wall_time_origin_unix_ns": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wall Time Origin Unix Ns"
+          }
+        },
+        "required": [
+          "run_id",
+          "events",
+          "complete",
+          "issues"
+        ],
+        "title": "ExposureEventTimelineResponse",
+        "type": "object"
+      },
+      "GraphAnnotationResponse": {
+        "properties": {
+          "category": {
+            "enum": [
+              "lifecycle",
+              "triggers",
+              "transmitting"
+            ],
+            "title": "Category",
+            "type": "string"
+          },
+          "event_id": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "point",
+              "interval"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "producer_unix_ns": {
+            "minimum": 0.0,
+            "title": "Producer Unix Ns",
+            "type": "integer"
+          },
+          "projection_quality": {
+            "enum": [
+              "producer",
+              "runtime_hint",
+              "exact",
+              "next_pulse"
+            ],
+            "title": "Projection Quality",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "x": {
+            "title": "X",
+            "type": "number"
+          },
+          "x_end": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "X End"
+          }
+        },
+        "required": [
+          "event_id",
+          "category",
+          "kind",
+          "label",
+          "x",
+          "source",
+          "producer_unix_ns",
+          "projection_quality"
+        ],
+        "title": "GraphAnnotationResponse",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "enum": [
+              "ok",
+              "starting",
+              "ready",
+              "degraded"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "system_state": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/HealthState"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "HealthState": {
+        "enum": [
+          "ok",
+          "warning",
+          "error",
+          "unknown"
+        ],
+        "title": "HealthState",
+        "type": "string"
+      },
+      "IssueSeverity": {
+        "enum": [
+          "warning",
+          "error"
+        ],
+        "title": "IssueSeverity",
+        "type": "string"
+      },
+      "LiveResponse": {
+        "properties": {
+          "batch": {
+            "$ref": "#/components/schemas/BatchSummary"
+          },
+          "experiment": {
+            "$ref": "#/components/schemas/ExperimentSummary"
+          },
+          "generated_at": {
+            "title": "Generated At",
+            "type": "number"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/ProgressSummary"
+          },
+          "queue": {
+            "$ref": "#/components/schemas/QueueSummary"
+          },
+          "revision": {
+            "minimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "sources": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/SourceSummary"
+            },
+            "title": "Sources",
+            "type": "object"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/StageSummary"
+          },
+          "subsystems": {
+            "items": {
+              "$ref": "#/components/schemas/SubsystemSummary"
+            },
+            "title": "Subsystems",
+            "type": "array"
+          },
+          "system": {
+            "$ref": "#/components/schemas/SystemSummary"
+          }
+        },
+        "required": [
+          "revision",
+          "generated_at",
+          "system",
+          "experiment",
+          "progress",
+          "queue",
+          "batch",
+          "stage",
+          "subsystems",
+          "sources"
+        ],
+        "title": "LiveResponse",
+        "type": "object"
+      },
+      "LogArchiveResponse": {
+        "properties": {
+          "end_line_exclusive": {
+            "minimum": 0.0,
+            "title": "End Line Exclusive",
+            "type": "integer"
+          },
+          "end_timestamp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Timestamp"
+          },
+          "is_current": {
+            "title": "Is Current",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "start_line": {
+            "minimum": 0.0,
+            "title": "Start Line",
+            "type": "integer"
+          },
+          "start_timestamp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Timestamp"
+          }
+        },
+        "required": [
+          "name",
+          "is_current",
+          "start_line",
+          "end_line_exclusive",
+          "start_timestamp",
+          "end_timestamp"
+        ],
+        "title": "LogArchiveResponse",
+        "type": "object"
+      },
+      "LogArchivesResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LogArchiveResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "LogArchivesResponse",
+        "type": "object"
+      },
+      "LogContextResponse": {
+        "properties": {
+          "archive": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archive"
+          },
+          "line_from": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line From"
+          },
+          "line_to": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line To"
+          },
+          "matching_archives": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Matching Archives",
+            "type": "array"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "resolution": {
+            "enum": [
+              "event",
+              "time",
+              "unscoped"
+            ],
+            "title": "Resolution",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Since"
+          },
+          "until": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Until"
+          }
+        },
+        "required": [
+          "resolution",
+          "archive",
+          "since",
+          "until",
+          "matching_archives",
+          "message"
+        ],
+        "title": "LogContextResponse",
+        "type": "object"
+      },
+      "LogEntryResponse": {
+        "properties": {
+          "l_type": {
+            "title": "L Type",
+            "type": "string"
+          },
+          "level": {
+            "title": "Level",
+            "type": "string"
+          },
+          "line": {
+            "minimum": 0.0,
+            "title": "Line",
+            "type": "integer"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "origin_uuid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Uuid"
+          },
+          "record": {
+            "additionalProperties": true,
+            "title": "Record",
+            "type": "object"
+          },
+          "subsystem": {
+            "title": "Subsystem",
+            "type": "string"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp"
+          }
+        },
+        "required": [
+          "line",
+          "timestamp",
+          "origin_uuid",
+          "l_type",
+          "level",
+          "subsystem",
+          "message",
+          "record"
+        ],
+        "title": "LogEntryResponse",
+        "type": "object"
+      },
+      "LogEventResponse": {
+        "properties": {
+          "data_end": {
+            "additionalProperties": true,
+            "title": "Data End",
+            "type": "object"
+          },
+          "data_start": {
+            "additionalProperties": true,
+            "title": "Data Start",
+            "type": "object"
+          },
+          "e_type": {
+            "title": "E Type",
+            "type": "string"
+          },
+          "end_line": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Line"
+          },
+          "end_timestamp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Timestamp"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          },
+          "level": {
+            "title": "Level",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "start_line": {
+            "minimum": 0.0,
+            "title": "Start Line",
+            "type": "integer"
+          },
+          "start_timestamp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Timestamp"
+          }
+        },
+        "required": [
+          "event_id",
+          "e_type",
+          "level",
+          "message",
+          "start_line",
+          "start_timestamp",
+          "end_timestamp",
+          "data_start",
+          "data_end"
+        ],
+        "title": "LogEventResponse",
+        "type": "object"
+      },
+      "LogEventsResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LogEventResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "LogEventsResponse",
+        "type": "object"
+      },
+      "LogFiltersResponse": {
+        "properties": {
+          "exclude_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exclude Types"
+          },
+          "l_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "L Type"
+          },
+          "level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Level"
+          },
+          "line_from": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line From"
+          },
+          "line_to": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Line To"
+          },
+          "min_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Level"
+          },
+          "origin_uuid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Uuid"
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Since"
+          },
+          "until": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Until"
+          }
+        },
+        "required": [
+          "origin_uuid",
+          "l_type",
+          "level",
+          "min_level",
+          "exclude_types",
+          "line_from",
+          "line_to",
+          "since",
+          "until"
+        ],
+        "title": "LogFiltersResponse",
+        "type": "object"
+      },
+      "LogPageResponse": {
+        "properties": {
+          "archive": {
+            "title": "Archive",
+            "type": "string"
+          },
+          "at_tail": {
+            "title": "At Tail",
+            "type": "boolean"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/LogFiltersResponse"
+          },
+          "first_line": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Line"
+          },
+          "has_after": {
+            "title": "Has After",
+            "type": "boolean"
+          },
+          "has_before": {
+            "title": "Has Before",
+            "type": "boolean"
+          },
+          "last_line": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Line"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/LogEntryResponse"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "archive",
+          "filters",
+          "rows",
+          "has_before",
+          "has_after",
+          "at_tail"
+        ],
+        "title": "LogPageResponse",
+        "type": "object"
+      },
+      "LogRangeResponse": {
+        "properties": {
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "ended_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ended At"
+          },
+          "event_id": {
+            "title": "Event Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "created_at",
+          "ended_at",
+          "complete"
+        ],
+        "title": "LogRangeResponse",
+        "type": "object"
+      },
+      "MetricMeasurementResponse": {
+        "properties": {
+          "goodness_of_fit": {
+            "title": "Goodness Of Fit",
+            "type": "number"
+          },
+          "spot_type": {
+            "enum": [
+              "exposed",
+              "blank"
+            ],
+            "title": "Spot Type",
+            "type": "string"
+          },
+          "thickness_nm": {
+            "title": "Thickness Nm",
+            "type": "number"
+          }
+        },
+        "required": [
+          "spot_type",
+          "thickness_nm",
+          "goodness_of_fit"
+        ],
+        "title": "MetricMeasurementResponse",
+        "type": "object"
+      },
+      "ProgressMode": {
+        "enum": [
+          "none",
+          "dose",
+          "time",
+          "indeterminate"
+        ],
+        "title": "ProgressMode",
+        "type": "string"
+      },
+      "ProgressSummary": {
+        "properties": {
+          "current": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/ProgressMode"
+          },
+          "percent": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Percent"
+          },
+          "target": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          }
+        },
+        "required": [
+          "mode",
+          "current",
+          "target",
+          "unit"
+        ],
+        "title": "ProgressSummary",
+        "type": "object"
+      },
+      "PublicExperimentPhase": {
+        "enum": [
+          "checking_system",
+          "preparing",
+          "initializing",
+          "exposing",
+          "stopping",
+          "idle"
+        ],
+        "title": "PublicExperimentPhase",
+        "type": "string"
+      },
+      "PublicStageState": {
+        "enum": [
+          "idle",
+          "homing",
+          "moving",
+          "offline",
+          "unknown"
+        ],
+        "title": "PublicStageState",
+        "type": "string"
+      },
+      "QueueSummary": {
+        "properties": {
+          "current_batch_remaining_count": {
+            "minimum": 0.0,
+            "title": "Current Batch Remaining Count",
+            "type": "integer"
+          },
+          "remaining_count": {
+            "minimum": 0.0,
+            "title": "Remaining Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "remaining_count",
+          "current_batch_remaining_count"
+        ],
+        "title": "QueueSummary",
+        "type": "object"
+      },
+      "RegisteredResourceResponse": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "downloadable": {
+            "title": "Downloadable",
+            "type": "boolean"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "resource_type": {
+            "title": "Resource Type",
+            "type": "string"
+          },
+          "size_bytes": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Bytes"
+          }
+        },
+        "required": [
+          "name",
+          "resource_type",
+          "available",
+          "downloadable",
+          "error"
+        ],
+        "title": "RegisteredResourceResponse",
+        "type": "object"
+      },
+      "RunDosePointResponse": {
+        "properties": {
+          "cumulative_dose_mj_cm2": {
+            "title": "Cumulative Dose Mj Cm2",
+            "type": "number"
+          },
+          "dose_increment_mj_cm2": {
+            "title": "Dose Increment Mj Cm2",
+            "type": "number"
+          },
+          "dose_rate_mj_cm2_s": {
+            "title": "Dose Rate Mj Cm2 S",
+            "type": "number"
+          },
+          "represented_pulse_count": {
+            "minimum": 0.0,
+            "title": "Represented Pulse Count",
+            "type": "integer"
+          },
+          "runtime_seconds": {
+            "minimum": 0.0,
+            "title": "Runtime Seconds",
+            "type": "number"
+          },
+          "source_index": {
+            "title": "Source Index",
+            "type": "integer"
+          },
+          "source_sequence": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sequence"
+          },
+          "wall_elapsed_seconds": {
+            "minimum": 0.0,
+            "title": "Wall Elapsed Seconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "wall_elapsed_seconds",
+          "runtime_seconds",
+          "dose_increment_mj_cm2",
+          "cumulative_dose_mj_cm2",
+          "dose_rate_mj_cm2_s",
+          "source_index",
+          "represented_pulse_count"
+        ],
+        "title": "RunDosePointResponse",
+        "type": "object"
+      },
+      "RunDoseSeriesResponse": {
+        "properties": {
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/GraphAnnotationResponse"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/RunDosePointResponse"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "raw_pulse_count": {
+            "minimum": 0.0,
+            "title": "Raw Pulse Count",
+            "type": "integer"
+          },
+          "resolution": {
+            "enum": [
+              "full",
+              "thumbnail"
+            ],
+            "title": "Resolution",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "runtime_basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime Basis"
+          },
+          "schema_version": {
+            "const": "3",
+            "default": "3",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source": {
+            "const": "persisted",
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "waiting_for_completion",
+              "missing",
+              "busy",
+              "complete",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "time_mode": {
+            "enum": [
+              "runtime",
+              "wall"
+            ],
+            "title": "Time Mode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "status",
+          "points",
+          "errors",
+          "source",
+          "resolution",
+          "raw_pulse_count",
+          "time_mode",
+          "annotations",
+          "issues"
+        ],
+        "title": "RunDoseSeriesResponse",
+        "type": "object"
+      },
+      "SnapshotAnalysisResponse": {
+        "properties": {
+          "average_pulse_dose_mj_cm2": {
+            "title": "Average Pulse Dose Mj Cm2",
+            "type": "number"
+          },
+          "backfill_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backfill Error"
+          },
+          "delivered_dose_rate_mj_cm2_s": {
+            "title": "Delivered Dose Rate Mj Cm2 S",
+            "type": "number"
+          },
+          "effective_duration_seconds": {
+            "minimum": 0.0,
+            "title": "Effective Duration Seconds",
+            "type": "number"
+          },
+          "is_step_exposure": {
+            "title": "Is Step Exposure",
+            "type": "boolean"
+          },
+          "metadata_backfilled": {
+            "title": "Metadata Backfilled",
+            "type": "boolean"
+          },
+          "pulse_span_seconds": {
+            "minimum": 0.0,
+            "title": "Pulse Span Seconds",
+            "type": "number"
+          },
+          "runtime_contribution_seconds": {
+            "minimum": 0.0,
+            "title": "Runtime Contribution Seconds",
+            "type": "number"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "step_mode_source": {
+            "enum": [
+              "provided",
+              "inferred",
+              "native"
+            ],
+            "title": "Step Mode Source",
+            "type": "string"
+          },
+          "total_dose_mj_cm2": {
+            "title": "Total Dose Mj Cm2",
+            "type": "number"
+          },
+          "wall_duration_seconds": {
+            "minimum": 0.0,
+            "title": "Wall Duration Seconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "average_pulse_dose_mj_cm2",
+          "total_dose_mj_cm2",
+          "delivered_dose_rate_mj_cm2_s",
+          "pulse_span_seconds",
+          "wall_duration_seconds",
+          "effective_duration_seconds",
+          "runtime_contribution_seconds",
+          "is_step_exposure",
+          "step_mode_source",
+          "metadata_backfilled",
+          "backfill_error"
+        ],
+        "title": "SnapshotAnalysisResponse",
+        "type": "object"
+      },
+      "SnapshotGraphSeriesResponse": {
+        "properties": {
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/GraphAnnotationResponse"
+            },
+            "title": "Annotations",
+            "type": "array"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "point_count": {
+            "minimum": 0.0,
+            "title": "Point Count",
+            "type": "integer"
+          },
+          "rolling_window": {
+            "minimum": 1.0,
+            "title": "Rolling Window",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "2",
+            "default": "2",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "series": {
+            "enum": [
+              "voltage",
+              "peaks",
+              "dose"
+            ],
+            "title": "Series",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "x": {
+            "items": {
+              "type": "number"
+            },
+            "title": "X",
+            "type": "array"
+          },
+          "x_label": {
+            "title": "X Label",
+            "type": "string"
+          },
+          "y": {
+            "items": {
+              "type": "number"
+            },
+            "title": "Y",
+            "type": "array"
+          },
+          "y_label": {
+            "title": "Y Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "series",
+          "x_label",
+          "y_label",
+          "x",
+          "y",
+          "point_count",
+          "rolling_window",
+          "annotations",
+          "issues"
+        ],
+        "title": "SnapshotGraphSeriesResponse",
+        "type": "object"
+      },
+      "SnapshotResponse": {
+        "properties": {
+          "final_sequence": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Final Sequence"
+          },
+          "format": {
+            "enum": [
+              "legacy_npz",
+              "euv_hdf5"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RegisteredResourceResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "snapshot_id": {
+            "format": "uuid",
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "waveform": {
+            "$ref": "#/components/schemas/RegisteredResourceResponse"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "format",
+          "waveform",
+          "metadata"
+        ],
+        "title": "SnapshotResponse",
+        "type": "object"
+      },
+      "SourceState": {
+        "enum": [
+          "available",
+          "not_applicable",
+          "degraded",
+          "stale",
+          "unavailable"
+        ],
+        "title": "SourceState",
+        "type": "string"
+      },
+      "SourceSummary": {
+        "properties": {
+          "attempted_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attempted At"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "observed_at": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observed At"
+          },
+          "state": {
+            "$ref": "#/components/schemas/SourceState"
+          }
+        },
+        "required": [
+          "state",
+          "observed_at",
+          "attempted_at",
+          "error"
+        ],
+        "title": "SourceSummary",
+        "type": "object"
+      },
+      "StagePosition": {
+        "properties": {
+          "theta": {
+            "title": "Theta",
+            "type": "number"
+          },
+          "z": {
+            "title": "Z",
+            "type": "number"
+          }
+        },
+        "required": [
+          "theta",
+          "z"
+        ],
+        "title": "StagePosition",
+        "type": "object"
+      },
+      "StageSummary": {
+        "properties": {
+          "current_sample_number": {
+            "anyOf": [
+              {
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Sample Number"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StagePosition"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "state": {
+            "$ref": "#/components/schemas/PublicStageState"
+          }
+        },
+        "required": [
+          "state",
+          "position"
+        ],
+        "title": "StageSummary",
+        "type": "object"
+      },
+      "SubsystemIssue": {
+        "properties": {
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/IssueSeverity"
+          }
+        },
+        "required": [
+          "severity",
+          "message"
+        ],
+        "title": "SubsystemIssue",
+        "type": "object"
+      },
+      "SubsystemSummary": {
+        "properties": {
+          "connected": {
+            "title": "Connected",
+            "type": "boolean"
+          },
+          "critical": {
+            "title": "Critical",
+            "type": "boolean"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/SubsystemIssue"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "primary_status": {
+            "title": "Primary Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "critical",
+          "connected",
+          "primary_status",
+          "issues"
+        ],
+        "title": "SubsystemSummary",
+        "type": "object"
+      },
+      "SubsystemsResponse": {
+        "properties": {
+          "generated_at": {
+            "title": "Generated At",
+            "type": "number"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SubsystemSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "revision": {
+            "minimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "system": {
+            "$ref": "#/components/schemas/SystemSummary"
+          }
+        },
+        "required": [
+          "revision",
+          "generated_at",
+          "system",
+          "items"
+        ],
+        "title": "SubsystemsResponse",
+        "type": "object"
+      },
+      "SystemIssue": {
+        "properties": {
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/IssueSeverity"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "severity",
+          "source",
+          "message"
+        ],
+        "title": "SystemIssue",
+        "type": "object"
+      },
+      "SystemSummary": {
+        "properties": {
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/SystemIssue"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "state": {
+            "$ref": "#/components/schemas/HealthState"
+          }
+        },
+        "required": [
+          "state",
+          "label",
+          "issues"
+        ],
+        "title": "SystemSummary",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "IPI Chamber Live API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/cameras": {
+      "get": {
+        "operationId": "get_cameras_api_v1_cameras_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CamerasResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Cameras"
+      }
+    },
+    "/api/v1/experiments": {
+      "get": {
+        "operationId": "get_experiments_api_v1_experiments_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Page Size"
+            }
+          },
+          {
+            "in": "query",
+            "name": "name",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_min",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created Min"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_max",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created Max"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_actual_dose",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Actual Dose"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_actual_dose",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Actual Dose"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_target_dose",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Target Dose"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_target_dose",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Target Dose"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_runtime",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Runtime"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_runtime",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Runtime"
+            }
+          },
+          {
+            "in": "query",
+            "name": "zr_filter",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Zr Filter"
+            }
+          },
+          {
+            "in": "query",
+            "name": "sample",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sample"
+            }
+          },
+          {
+            "in": "query",
+            "name": "operator",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Operator"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperimentPageResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Experiments"
+      }
+    },
+    "/api/v1/experiments/options": {
+      "get": {
+        "operationId": "get_experiment_filter_options_api_v1_experiments_options_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperimentFilterOptionsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Experiment Filter Options"
+      }
+    },
+    "/api/v1/experiments/{run_id}": {
+      "get": {
+        "operationId": "get_experiment_api_v1_experiments__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperimentDetailResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Experiment"
+      }
+    },
+    "/api/v1/experiments/{run_id}/dose-series": {
+      "get": {
+        "operationId": "get_run_dose_series_api_v1_experiments__run_id__dose_series_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "time_mode",
+            "required": false,
+            "schema": {
+              "default": "runtime",
+              "pattern": "^(runtime|wall)$",
+              "title": "Time Mode",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "resolution",
+            "required": false,
+            "schema": {
+              "default": "full",
+              "pattern": "^(full|thumbnail)$",
+              "title": "Resolution",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunDoseSeriesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Run Dose Series"
+      }
+    },
+    "/api/v1/experiments/{run_id}/dose-series/ensure": {
+      "post": {
+        "operationId": "ensure_run_dose_series_api_v1_experiments__run_id__dose_series_ensure_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "time_mode",
+            "required": false,
+            "schema": {
+              "default": "runtime",
+              "pattern": "^(runtime|wall)$",
+              "title": "Time Mode",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "resolution",
+            "required": false,
+            "schema": {
+              "default": "full",
+              "pattern": "^(full|thumbnail)$",
+              "title": "Resolution",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunDoseSeriesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ensure Run Dose Series"
+      }
+    },
+    "/api/v1/experiments/{run_id}/events": {
+      "get": {
+        "operationId": "get_exposure_events_api_v1_experiments__run_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExposureEventTimelineResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Exposure Events"
+      }
+    },
+    "/api/v1/experiments/{run_id}/export": {
+      "get": {
+        "operationId": "export_experiment_api_v1_experiments__run_id__export_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Experiment"
+      }
+    },
+    "/api/v1/experiments/{run_id}/metrics": {
+      "get": {
+        "operationId": "get_experiment_metrics_api_v1_experiments__run_id__metrics_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperimentMetricsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Experiment Metrics"
+      }
+    },
+    "/api/v1/experiments/{run_id}/resources": {
+      "get": {
+        "operationId": "get_experiment_resources_api_v1_experiments__run_id__resources_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperimentResourcesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Experiment Resources"
+      }
+    },
+    "/api/v1/experiments/{run_id}/resources/{resource_name}": {
+      "get": {
+        "operationId": "download_experiment_resource_api_v1_experiments__run_id__resources__resource_name__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "resource_name",
+            "required": true,
+            "schema": {
+              "title": "Resource Name",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Range",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Range"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download Experiment Resource"
+      }
+    },
+    "/api/v1/experiments/{run_id}/snapshots/{snapshot_id}/analysis": {
+      "get": {
+        "operationId": "get_snapshot_analysis_api_v1_experiments__run_id__snapshots__snapshot_id__analysis_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotAnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Snapshot Analysis"
+      }
+    },
+    "/api/v1/experiments/{run_id}/snapshots/{snapshot_id}/series/{series}": {
+      "get": {
+        "operationId": "get_snapshot_series_api_v1_experiments__run_id__snapshots__snapshot_id__series__series__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "snapshot_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Snapshot Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "series",
+            "required": true,
+            "schema": {
+              "title": "Series",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "rolling_window",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "title": "Rolling Window",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "time_mode",
+            "required": false,
+            "schema": {
+              "default": "wall",
+              "pattern": "^(wall|apparent)$",
+              "title": "Time Mode",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SnapshotGraphSeriesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Snapshot Series"
+      }
+    },
+    "/api/v1/live": {
+      "get": {
+        "operationId": "get_live_api_v1_live_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LiveResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Live"
+      }
+    },
+    "/api/v1/live/events": {
+      "get": {
+        "operationId": "get_live_events_api_v1_live_events_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Last-Event-ID",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Last-Event-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Live Events"
+      }
+    },
+    "/api/v1/logs/archives": {
+      "get": {
+        "operationId": "get_log_archives_api_v1_logs_archives_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogArchivesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Log Archives"
+      }
+    },
+    "/api/v1/logs/context": {
+      "get": {
+        "operationId": "get_log_context_api_v1_logs_context_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "event_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "created_at",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Created At"
+            }
+          },
+          {
+            "in": "query",
+            "name": "ended_at",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ended At"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogContextResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Log Context"
+      }
+    },
+    "/api/v1/logs/entries": {
+      "get": {
+        "operationId": "get_log_entries_api_v1_logs_entries_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "archive",
+            "required": false,
+            "schema": {
+              "default": "current",
+              "maxLength": 128,
+              "minLength": 1,
+              "title": "Archive",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "direction",
+            "required": false,
+            "schema": {
+              "default": "tail",
+              "enum": [
+                "head",
+                "tail",
+                "before",
+                "after"
+              ],
+              "title": "Direction",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "anchor_line",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Anchor Line"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 100,
+              "maximum": 100,
+              "minimum": 50,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "origin_uuid",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Origin Uuid"
+            }
+          },
+          {
+            "in": "query",
+            "name": "l_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "L Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "level",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 32,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Level"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_level",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 32,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Level"
+            }
+          },
+          {
+            "in": "query",
+            "name": "exclude_type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Exclude Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "include_records",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Include Records",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "line_from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Line From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "line_to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Line To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          },
+          {
+            "in": "query",
+            "name": "until",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Until"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogPageResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Log Entries"
+      }
+    },
+    "/api/v1/logs/events": {
+      "get": {
+        "operationId": "get_log_events_api_v1_logs_events_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "archive",
+            "required": false,
+            "schema": {
+              "default": "current",
+              "maxLength": 128,
+              "minLength": 1,
+              "title": "Archive",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogEventsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Log Events"
+      }
+    },
+    "/api/v1/subsystems": {
+      "get": {
+        "operationId": "get_subsystems_api_v1_subsystems_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubsystemsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Subsystems"
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "health_live_health_live_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health Live"
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "health_ready_health_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health Ready"
+      }
+    }
+  }
+}

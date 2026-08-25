@@ -1,0 +1,50 @@
+services:
+  frontend-dev:
+    image: node:24-alpine
+    init: true
+    working_dir: /workspace
+    command: sh -c "npm ci && npm run dev"
+    environment:
+      API_PROXY_TARGET: http://host.docker.internal:8000
+      VITE_GRAFANA_URL: "${GF_SERVER_ROOT_URL:-http://localhost:3000/}"
+      VITE_USE_POLLING: "true"
+    ports:
+      - "${FRONTEND_DEV_BIND_ADDRESS:-127.0.0.1}:${FRONTEND_DEV_PORT:-5173}:5173"
+    volumes:
+      - ./apps/webview/frontend:/workspace
+      - frontend-node-modules:/workspace/node_modules
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - web
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:5173/"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  frontend-e2e:
+    image: mcr.microsoft.com/playwright:v1.62.1-noble
+    profiles: ["test"]
+    init: true
+    ipc: host
+    working_dir: /workspace
+    command: sh -c "npm ci && npm run test:e2e"
+    environment:
+      PLAYWRIGHT_BASE_URL: http://frontend-dev:5173
+    volumes:
+      - ./apps/webview/frontend:/workspace
+      - frontend-e2e-node-modules:/workspace/node_modules
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "live.ipi.illinois.edu:host-gateway"
+    depends_on:
+      frontend-dev:
+        condition: service_healthy
+    networks:
+      - web
+
+volumes:
+  frontend-node-modules:
+  frontend-e2e-node-modules:
