@@ -2,6 +2,7 @@
 param(
     [string]$Python = "python",
     [string]$EcsSource = "",
+    [string]$AcquisitionSource = "",
     [string]$ChamberCtlSource = "",
     [string]$ChamberCtlFallback = "https://github.com/IPI-EUVL/chamber-ctl/archive/refs/heads/main.tar.gz"
 )
@@ -96,9 +97,10 @@ function Install-Source {
 }
 
 Install-Source "ipi-ecs" $EcsSource
+Install-Source "ipi-euv-acquisition" $AcquisitionSource
 Install-Source "ipi-chamber-ctl" $ChamberCtlSource $ChamberCtlFallback
 Invoke-VenvPython -m pip install -c $constraintsPath -e "$projectRoot[dev]"
-$originCheck = "import chamber_ctl, ipi_ecs, ipi_webview; print(chamber_ctl.__file__); print(ipi_ecs.__file__); print(ipi_webview.__file__)"
+$originCheck = "import chamber_ctl, euv_acquisition, ipi_ecs, ipi_webview; print(chamber_ctl.__file__); print(euv_acquisition.__file__); print(ipi_ecs.__file__); print(ipi_webview.__file__)"
 Invoke-VenvPython -c $originCheck
 
 Write-Output "Host development environment ready: $venvPath"

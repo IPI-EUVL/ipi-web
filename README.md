@@ -43,7 +43,16 @@ From `apps/webview`, create the isolated host environment once:
 .\scripts\setup_host_dev.ps1
 ```
 
-The setup script detects editable `ipi-ecs` and `ipi-chamber-ctl` sources from the selected Python environment and registers them inside `apps/webview/.venv`. If `chamber-ctl` is not installed editably, it falls back to GitHub; missing `ipi-ecs` comes from PyPI. It assumes no workspace-root directory structure and never modifies the selected interpreter.
+The setup script detects editable `ipi-ecs`, `ipi-euv-acquisition`, and `ipi-chamber-ctl` sources from the selected Python environment and registers them inside `apps/webview/.venv`. The acquisition source checkout is named `pitaya`. If a source cannot be detected, pass it explicitly:
+
+```powershell
+.\scripts\setup_host_dev.ps1 `
+	-EcsSource C:\src\ecs `
+	-AcquisitionSource C:\src\pitaya `
+	-ChamberCtlSource C:\src\chamber-ctl
+```
+
+If `chamber-ctl` is not installed editably, it falls back to GitHub; missing published dependencies are resolved from PyPI. The script assumes no workspace-root directory structure and never modifies the selected interpreter.
 
 Set the host-only API configuration and start it:
 
@@ -52,6 +61,7 @@ $env:WEBVIEW_ECS_HOST = "<chamber-dds-host>"
 $env:WEBVIEW_DATA_PATH = "C:\path\to\Box\datasets"
 $env:IPI_ECS_LOG_DIR = "C:\path\to\ecs-logs"
 $env:WEBVIEW_DOCS_ENABLED = "true"
+$env:WEBVIEW_TRUSTED_HOSTS = "localhost,127.0.0.1,<process-host-IP-or-name>"
 .\.venv\Scripts\chamber-webview-api.exe
 ```
 
@@ -75,7 +85,9 @@ Set `DATASET_HOST_PATH`, `LOG_HOST_PATH`, `ECS_HOST`, `API_UID`, and `API_GID` i
 
 ## Environment files
 
-`.env.example` is the committed schema and safe-value template. `.env` is the ignored, machine-specific configuration used by Compose. Their keys are synchronized, but secrets and host-specific values should differ. Copy the example only for initial setup; do not overwrite a working `.env` during updates.
+`.env.example` is the committed schema and safe-value template. `.env` is the ignored, machine-specific configuration used by Compose. Copy the example only for initial setup; do not overwrite a working `.env` during updates. The template includes variables for every deployment mode, while a Windows host API deployment needs only the variables consumed by its Compose services.
+
+For the Windows workstation topology, `DATASET_HOST_PATH`, `LOG_HOST_PATH`, `ECS_HOST`, `API_UID`, and `API_GID` are required only by the Linux container-API overlay. `FRONTEND_DEV_PORT` is required only by the frontend development overlay. Their absence from a working Windows `.env` does not affect the default stack.
 
 Docker Compose reads the root `.env` automatically. The standalone `chamber-webview-api` process does not; set its `WEBVIEW_*` variables in the host shell as shown above.
 
@@ -145,6 +157,15 @@ The new stack reuses these existing external volumes:
 - `dashboard_ipi-dashboard-db-persist`
 
 The Compose-local labels `grafana-data` and `postgres-data` are aliases. Their explicit `name:` settings point to the two existing Docker volume objects above; no replacement `ipi-live_*` volumes are created. The existing Grafana configuration and PostgreSQL data therefore remain in place.
+
+On a new host without the legacy dashboard deployment, create the external volumes once before starting Compose:
+
+```powershell
+docker volume create dashboard_ipi-dashboard-persist
+docker volume create dashboard_ipi-dashboard-db-persist
+```
+
+Use the names configured by `GRAFANA_DATA_VOLUME` and `POSTGRES_DATA_VOLUME` if they differ. Do not create bind mounts for Grafana or PostgreSQL; Docker named volumes are the intended persistent storage.
 
 From the legacy dashboard deployment directory, stop the old containers without deleting volumes:
 

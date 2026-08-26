@@ -4,7 +4,7 @@ Read-only live adapter and HTTP API for the IPI EUV experiment chamber.
 
 ## Local API
 
-Create an isolated host environment. The script reuses any editable `ipi-ecs` and `ipi-chamber-ctl` sources already registered in the selected Python environment:
+Create an isolated host environment. The script reuses any editable `ipi-ecs`, `ipi-euv-acquisition`, and `ipi-chamber-ctl` sources already registered in the selected Python environment:
 
 ```powershell
 .\scripts\setup_host_dev.ps1
@@ -14,13 +14,18 @@ $env:IPI_ECS_LOG_DIR = "C:\path\to\ecs-logs"
 .\.venv\Scripts\chamber-webview-api.exe
 ```
 
-`ipi-chamber-ctl` is an ordinary unpinned project requirement, so an installed local editable copy satisfies it. If the selected Python has no editable `chamber-ctl`, the setup script installs the GitHub repository as a fallback. Missing `ipi-ecs` is resolved from PyPI. No workspace-root layout is assumed.
+`ipi-chamber-ctl` depends on `ipi-euv-acquisition`, whose source checkout is currently named `pitaya`. If the selected Python has no editable acquisition package, setup resolves it from the package index. If it is not published there, pass its source directory explicitly. If the selected Python has no editable `chamber-ctl`, the setup script installs the GitHub repository as a fallback. Missing `ipi-ecs` is resolved from PyPI. No workspace-root layout is assumed.
 
 You can override detection explicitly when needed:
 
 ```powershell
-.\scripts\setup_host_dev.ps1 -EcsSource C:\src\ecs -ChamberCtlSource C:\src\chamber-ctl
+.\scripts\setup_host_dev.ps1 `
+	-EcsSource C:\src\ecs `
+	-AcquisitionSource C:\src\pitaya `
+	-ChamberCtlSource C:\src\chamber-ctl
 ```
+
+`-Python` must be the interpreter where those editable packages are installed. The new `apps/webview/.venv` remains isolated and receives editable links to the detected or supplied sources.
 
 Do not run setup in a shared interpreter; `.venv` keeps dependency changes isolated.
 
