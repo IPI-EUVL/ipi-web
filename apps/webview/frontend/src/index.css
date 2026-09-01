@@ -1615,6 +1615,22 @@ h2 {
 .inter-snapshot-panel { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--border-soft); }
 .inter-snapshot-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .inter-snapshot-heading h2 { margin: 0; font-size: 0.92rem; }
+.dose-comparison-controls { display: flex; flex-wrap: wrap; align-items: end; justify-content: flex-end; gap: 10px; }
+.dose-comparison-controls > label { display: grid; min-width: min(100%, 260px); gap: 4px; color: var(--muted); font-size: 0.65rem; text-transform: uppercase; }
+.dose-comparison-controls select { min-height: 32px; padding: 0 8px; color: var(--text); border: 1px solid var(--border); border-radius: 4px; background: rgba(4, 9, 14, 0.54); font: inherit; text-transform: none; }
+.dose-comparison-chart { min-height: 374px; }
+.dose-comparison-legend { display: flex; min-height: 33px; flex-wrap: wrap; align-items: center; gap: 14px; padding: 0 12px 10px; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-size: 0.65rem; }
+.dose-comparison-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.dose-comparison-legend i { width: 18px; height: 2px; flex: 0 0 auto; }
+.dose-comparison-table-wrap { max-width: 100%; overflow-x: auto; border: 1px solid var(--border-soft); }
+.dose-comparison-table { width: 100%; min-width: 820px; border-collapse: collapse; font-family: "IBM Plex Mono", monospace; font-size: 0.67rem; }
+.dose-comparison-table th { padding: 8px 10px; color: var(--muted); border-bottom: 1px solid var(--border); background: rgba(4, 9, 14, 0.48); font-size: 0.61rem; font-weight: 500; text-align: left; text-transform: uppercase; }
+.dose-comparison-table td { padding: 9px 10px; color: var(--text); border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+.dose-comparison-table tr:last-child td { border-bottom: 0; }
+.dose-comparison-table strong, .dose-comparison-table small { display: block; }
+.dose-comparison-table strong { color: var(--text-strong); font-weight: 500; }
+.dose-comparison-table small { margin-top: 2px; color: var(--muted); font-size: 0.6rem; }
+.dose-comparison-table small.is-warning { color: var(--amber); }
 
 .overview-focus { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.65fr); gap: 14px; }
 .overview-primary-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--border-soft); }

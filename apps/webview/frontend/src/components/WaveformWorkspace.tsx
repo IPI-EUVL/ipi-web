@@ -4,14 +4,18 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   type ExperimentDetail,
   type GraphAnnotationCategory,
+  type ObserverDoseComparison,
   type RunTimeMode,
   type SnapshotGraphSeries,
   type SnapshotSeriesKind,
   type SnapshotTimeMode,
+  useObserverDoseComparison,
   useRunDoseSeries,
   useSnapshotAnalysis,
   useSnapshotSeries,
 } from '../api/experiments'
+import { DoseComparisonChart } from './DoseComparisonChart'
+import type { DoseComparisonLine } from './doseComparisonSeries'
 import { ExperimentLoadingPanel } from './ExperimentLoadingPanel'
 import { SnapshotChart } from './SnapshotChart'
 
@@ -25,6 +29,24 @@ const rollingWindows = [1, 10, 50, 100]
 
 function format(value: number): string {
   return value.toLocaleString(undefined, { maximumFractionDigits: 6 })
+}
+
+type ObserverSeries = ObserverDoseComparison['series'][number]
+
+function observerSourceKey(series: ObserverSeries): string {
+  return JSON.stringify([series.source_kind, series.source_id, series.session_id])
+}
+
+function algorithmLabel(algorithm: ObserverSeries['algorithm']): string {
+  return algorithm === 'captured' ? 'Captured' : 'Legacy compensated'
+}
+
+function deltaLabel(value: number, canonical: number | null): string {
+  if (canonical === null) return 'Canonical total unavailable'
+  const delta = value - canonical
+  const sign = delta > 0 ? '+' : ''
+  if (canonical === 0) return `${sign}${format(delta)} mJ/cm²`
+  return `${sign}${format(delta)} mJ/cm² (${sign}${format(delta / canonical * 100)}%)`
 }
 
 type TimedSnapshot = {
@@ -51,12 +73,17 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
   const [timeMode, setTimeMode] = useState<SnapshotTimeMode>('wall')
   const [runTimeMode, setRunTimeMode] = useState<RunTimeMode>('runtime')
   const [interSnapshotMode, setInterSnapshotMode] = useState<'cumulative' | 'rate'>('cumulative')
+  const [selectedObserverSource, setSelectedObserverSource] = useState<string | null>(null)
+  const [visibleObserverAlgorithms, setVisibleObserverAlgorithms] = useState<Set<ObserverSeries['algorithm']>>(
+    () => new Set(['captured', 'legacy_compensated']),
+  )
   const [visibleCategories, setVisibleCategories] = useState<Set<GraphAnnotationCategory>>(
     () => new Set(['lifecycle', 'triggers', 'transmitting']),
   )
   const selectedByUserRef = useRef(false)
   const selectedWindow = mode === 'voltage' ? 1 : rollingWindow
   const runSeries = useRunDoseSeries(runId, runTimeMode, 'full')
+  const observerComparison = useObserverDoseComparison(runId, 'full')
   const selectedSnapshotResource = detail.snapshots.find(({ snapshot_id }) => snapshot_id === selectedSnapshot) ?? null
   const orderedSnapshots = useMemo(
     () => orderSnapshotsByElapsed(detail.snapshots),
@@ -67,6 +94,11 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
     [orderedSnapshots],
   )
   const selectionOrderKey = availableSnapshots.map(({ snapshot }) => snapshot.snapshot_id).join('|')
+  const observerSources = useMemo(() => {
+    const values = new Map<string, ObserverSeries>()
+    for (const item of observerComparison.data?.series ?? []) values.set(observerSourceKey(item), item)
+    return [...values.entries()]
+  }, [observerComparison.data?.series])
 
   useEffect(() => {
     selectedByUserRef.current = false
@@ -79,6 +111,14 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
       return selectedByUserRef.current && currentIsAvailable ? current : firstAvailableSnapshot
     })
   }, [availableSnapshots, runId, selectionOrderKey])
+
+  useEffect(() => {
+    setSelectedObserverSource((current) => (
+      current !== null && observerSources.some(([key]) => key === current)
+        ? current
+        : observerSources[0]?.[0] ?? null
+    ))
+  }, [observerSources, runId])
 
   const selectSnapshot = (snapshotId: string | null) => {
     selectedByUserRef.current = true
@@ -108,12 +148,51 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
       issues: runSeries.data?.issues ?? [],
     }
   }, [interSnapshotMode, runId, runSeries.data?.annotations, runSeries.data?.issues, runSeries.data?.points, runTimeMode])
+  const selectedObserverSeries = useMemo(
+    () => (observerComparison.data?.series ?? []).filter((item) => observerSourceKey(item) === selectedObserverSource),
+    [observerComparison.data?.series, selectedObserverSource],
+  )
+  const comparisonLines = useMemo<DoseComparisonLine[]>(() => {
+    const lines: DoseComparisonLine[] = []
+    const canonicalPoints = runSeries.data?.points ?? []
+    if (canonicalPoints.length > 0) {
+      lines.push({
+        key: 'canonical',
+        label: 'Red Pitaya canonical',
+        color: '#59c8e8',
+        x: canonicalPoints.map((point) => point.wall_elapsed_seconds),
+        y: canonicalPoints.map((point) => point.cumulative_dose_mj_cm2),
+      })
+    }
+    for (const item of selectedObserverSeries) {
+      if (!visibleObserverAlgorithms.has(item.algorithm)) continue
+      lines.push({
+        key: `${item.session_id}:${item.algorithm}`,
+        label: `Siglent ${algorithmLabel(item.algorithm).toLowerCase()}`,
+        color: item.algorithm === 'captured' ? '#e9b85f' : '#ef7d68',
+        dashed: item.algorithm === 'legacy_compensated',
+        x: item.points.map((point) => point.wall_elapsed_seconds),
+        y: item.points.map((point) => point.cumulative_dose_mj_cm2),
+      })
+    }
+    return lines
+  }, [runSeries.data?.points, selectedObserverSeries, visibleObserverAlgorithms])
+  const canonicalTotal = runSeries.data?.points.at(-1)?.cumulative_dose_mj_cm2 ?? null
 
   const toggleCategory = (category: GraphAnnotationCategory) => {
     setVisibleCategories((current) => {
       const next = new Set(current)
       if (next.has(category)) next.delete(category)
       else next.add(category)
+      return next
+    })
+  }
+
+  const toggleObserverAlgorithm = (algorithm: ObserverSeries['algorithm']) => {
+    setVisibleObserverAlgorithms((current) => {
+      const next = new Set(current)
+      if (next.has(algorithm)) next.delete(algorithm)
+      else next.add(algorithm)
       return next
     })
   }
@@ -168,6 +247,67 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
         {runSeries.data?.status === 'error' && <p className="inline-notice">The persisted exposure graph could not be read.</p>}
         {runSeries.data?.errors.length ? <p className="overview-analysis-errors">{runSeries.data.errors.join(' ')}</p> : null}
         {runSeries.data?.issues.length ? <p className="inline-notice">{runSeries.data.issues.join(' ')}</p> : null}
+      </section>
+
+      <section className="inter-snapshot-panel dose-comparison-panel">
+        <div className="inter-snapshot-heading">
+          <div><p className="eyebrow">Source comparison</p><h2>Canonical and observer dose</h2></div>
+          {observerSources.length > 0 && <div className="dose-comparison-controls">
+            <label>Observer source
+              <select value={selectedObserverSource ?? ''} onChange={(event) => setSelectedObserverSource(event.target.value || null)}>
+                {observerSources.map(([key, item]) => (
+                  <option key={key} value={key}>{item.source_kind} / {item.source_id} · {item.session_id.slice(-8)}</option>
+                ))}
+              </select>
+            </label>
+            <div className="annotation-filters" aria-label="Observer algorithms">
+              {(['captured', 'legacy_compensated'] as const).map((algorithm) => (
+                <label key={algorithm}>
+                  <input type="checkbox" checked={visibleObserverAlgorithms.has(algorithm)} onChange={() => toggleObserverAlgorithm(algorithm)} />
+                  {algorithmLabel(algorithm)}
+                </label>
+              ))}
+            </div>
+          </div>}
+        </div>
+        {observerComparison.isLoading && <ExperimentLoadingPanel title="Loading observer comparison" detail="Reading persisted source-qualified products." />}
+        {observerComparison.error && <p className="inline-notice">{observerComparison.error.message}</p>}
+        {observerComparison.data?.status === 'missing' && <p className="muted">No observer dose products are attached to this exposure.</p>}
+        {comparisonLines.length > 0 && observerComparison.data?.status === 'complete' && <DoseComparisonChart lines={comparisonLines} />}
+        {observerComparison.data?.status === 'complete' && selectedObserverSeries.length > 0 && (
+          <div className="dose-comparison-table-wrap">
+            <table className="dose-comparison-table">
+              <thead><tr><th>Series</th><th>Total dose</th><th>Delta</th><th>Calibration</th><th>Completeness</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>Red Pitaya</strong><small>Canonical</small></td>
+                  <td>{canonicalTotal === null ? '--' : `${format(canonicalTotal)} mJ/cm²`}</td>
+                  <td>Reference</td>
+                  <td>Active canonical analysis</td>
+                  <td>Authoritative</td>
+                </tr>
+                {selectedObserverSeries.map((item) => (
+                  <tr key={`${item.session_id}:${item.algorithm}`}>
+                    <td><strong>{algorithmLabel(item.algorithm)}</strong><small>{item.source_kind} / {item.source_id}</small></td>
+                    <td>{format(item.total_dose_mj_cm2)} mJ/cm²</td>
+                    <td>{deltaLabel(item.total_dose_mj_cm2, canonicalTotal)}</td>
+                    <td>{item.calibration_name} r{item.calibration_revision}<small>{item.calibration_hash.slice(0, 12)}</small></td>
+                    <td>{item.completeness.included_snapshot_count}/{item.completeness.snapshot_count} transfers
+                      <small className={item.status === 'incomplete' ? 'is-warning' : ''}>
+                        {item.status}
+                        {item.completeness.unknown_eligibility_snapshot_count > 0 ? ` · ${item.completeness.unknown_eligibility_snapshot_count} timing unknown` : ''}
+                        {item.completeness.unknown_step_mode_snapshot_count > 0 ? ` · ${item.completeness.unknown_step_mode_snapshot_count} mode inferred` : ''}
+                      </small>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {selectedObserverSeries.flatMap((item) => item.issues).length > 0 && (
+          <p className="inline-notice">{selectedObserverSeries.flatMap((item) => item.issues).join(' ')}</p>
+        )}
       </section>
     </div>
   )
