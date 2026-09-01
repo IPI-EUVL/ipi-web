@@ -65,6 +65,12 @@ $env:WEBVIEW_TRUSTED_HOSTS = "localhost,127.0.0.1,<process-host-IP-or-name>"
 .\.venv\Scripts\chamber-webview-api.exe
 ```
 
+If the current directory is the repository root instead, use the full relative path:
+
+```powershell
+.\apps\webview\.venv\Scripts\chamber-webview-api.exe
+```
+
 The API listens on `0.0.0.0:8000`, allowing nginx in Docker Desktop to reach it at `host.docker.internal:8000`. Keep that terminal open. In another terminal at the repository root, start the container services:
 
 ```powershell

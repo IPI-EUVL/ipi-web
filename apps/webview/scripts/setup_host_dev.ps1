@@ -104,3 +104,4 @@ $originCheck = "import chamber_ctl, euv_acquisition, ipi_ecs, ipi_webview; print
 Invoke-VenvPython -c $originCheck
 
 Write-Output "Host development environment ready: $venvPath"
+Write-Output "Start the API with: & '$venvPath\Scripts\chamber-webview-api.exe'"
