@@ -377,6 +377,53 @@ class RunDoseSeriesResponse(ApiModel):
     issues: tuple[str, ...]
 
 
+class ObserverDosePointResponse(ApiModel):
+    wall_elapsed_seconds: float = Field(ge=0)
+    dose_increment_mj_cm2: float
+    cumulative_dose_mj_cm2: float
+    source_sequence: int | None = None
+    represented_pulse_count: int = Field(ge=0)
+
+
+class ObserverDoseCompletenessResponse(ApiModel):
+    snapshot_count: int = Field(ge=0)
+    included_snapshot_count: int = Field(ge=0)
+    excluded_snapshot_count: int = Field(ge=0)
+    unknown_eligibility_snapshot_count: int = Field(ge=0)
+    unknown_step_mode_snapshot_count: int = Field(ge=0)
+
+
+class ObserverDoseSeriesResponse(ApiModel):
+    session_id: UUID
+    source_kind: str
+    source_id: str
+    algorithm: Literal["captured", "legacy_compensated"]
+    algorithm_version: str
+    status: Literal["complete", "incomplete"]
+    points: tuple[ObserverDosePointResponse, ...]
+    raw_point_count: int = Field(ge=0)
+    pulse_count: int = Field(ge=0)
+    transfer_count: int = Field(ge=0)
+    total_dose_mj_cm2: float
+    average_pulse_dose_mj_cm2: float
+    calibration_profile_id: UUID
+    calibration_revision: int = Field(ge=1)
+    calibration_name: str
+    calibration_hash: str
+    completeness: ObserverDoseCompletenessResponse
+    issues: tuple[str, ...]
+
+
+class ObserverDoseComparisonResponse(ApiModel):
+    schema_version: Literal["1"] = "1"
+    run_id: UUID
+    status: Literal["missing", "complete"]
+    series: tuple[ObserverDoseSeriesResponse, ...]
+    errors: tuple[str, ...]
+    resolution: Literal["full", "thumbnail"]
+    wall_origin_quality: Literal["unavailable", "observer_first_capture", "run_preinit"]
+
+
 class ExposureEventResponse(ApiModel):
     event_id: UUID
     stream_id: UUID

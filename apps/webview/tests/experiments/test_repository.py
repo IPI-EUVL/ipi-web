@@ -71,6 +71,104 @@ def test_list_page_is_read_only_scoped_and_uses_indexed_runtime_filters(tmp_path
     assert {item.name for item in (*page.items, *next_page.items)} == {"Run 2", "Run 3", "Run 4"}
 
 
+def test_observer_dose_comparison_uses_run_preinit_wall_origin(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from chamber_ctl.data.calibration import CalibrationProfile, SourceKey
+    from chamber_ctl.data.observer_analysis import (
+        ObserverCompleteness,
+        ObserverDoseAnalysis,
+        ObserverDoseGraph,
+        ObserverDoseGraphLevel,
+        ObserverDoseProduct,
+    )
+    from ipi_ecs.subsystems.run_events import STREAM_END_KIND, STREAM_START_KIND, RunEventStream, append_run_event
+
+    run_id = uuid.uuid4()
+    session_id = uuid.uuid4()
+    profile = CalibrationProfile(
+        profile_id=uuid.uuid4(),
+        revision=2,
+        name="Observer fixture",
+        created_at=1.0,
+        algorithm_version="fixture-v1",
+        signal_polarity=1,
+        load_resistance_ohms=50.0,
+        photodiode_responsivity_a_per_w=0.14,
+        illuminated_area_cm2=0.05,
+    )
+    completeness = ObserverCompleteness(1, 1, 0, 0, 0)
+    analysis = ObserverDoseAnalysis(
+        run_id,
+        session_id,
+        SourceKey("siglent", "scope-1"),
+        "captured",
+        "siglent-captured-v1-native-integral-sum",
+        "siglent-native-v1-pre-float32-legacy-trapezoid",
+        2.0,
+        "a" * 64,
+        profile,
+        "complete",
+        completeness,
+        250,
+        1,
+        2.5,
+        0.01,
+        f"euv_observer_dose_graph_{session_id}_captured.h5",
+        (),
+    )
+    level = ObserverDoseGraphLevel(
+        wall_unix_ns=np.asarray([1_000_000_000, 2_000_000_000], dtype=np.int64),
+        dose_increment_mj_cm2=np.asarray([0.0, 2.5]),
+        cumulative_dose_mj_cm2=np.asarray([0.0, 2.5]),
+        source_sequence=np.asarray([-1, 249], dtype=np.int64),
+        represented_pulse_count=np.asarray([0, 250], dtype=np.int64),
+    )
+    graph = ObserverDoseGraph(
+        run_id,
+        session_id,
+        analysis.source_key,
+        "captured",
+        analysis.algorithm_version,
+        analysis.source_fingerprint,
+        profile.content_hash,
+        "complete",
+        250,
+        level,
+        level,
+    )
+    monkeypatch.setattr(
+        repository_module,
+        "load_observer_dose_products",
+        lambda _entry, _data_path, requested_run_id: (
+            ObserverDoseProduct(analysis, graph),
+        ) if requested_run_id == run_id else (),
+    )
+    library = Library(str(tmp_path))
+    entry = library.create_entry("Observer comparison", "Fixture")
+    entry.set_tag("experiment", "exposure")
+    entry.set_tag("run", run_id.hex)
+    stream = RunEventStream(run_id, uuid.uuid4(), "controller.lifecycle", uuid.uuid4())
+    append_run_event(entry, stream.event(STREAM_START_KIND, producer_unix_ns=900_000_000, ingest_unix_ns=900_000_000))
+    append_run_event(
+        entry,
+        stream.event("lifecycle.phase", {"phase": "PREINIT"}, producer_unix_ns=1_000_000_000, ingest_unix_ns=1_000_000_000),
+    )
+    append_run_event(entry, stream.event(STREAM_END_KIND, producer_unix_ns=3_000_000_000, ingest_unix_ns=3_000_000_000))
+    library.close()
+    repository = ExperimentBrowserRepository(ExperimentBrowserConfig(str(tmp_path)))
+    repository.start()
+    try:
+        comparison = repository.get_observer_dose_comparison(run_id)
+    finally:
+        repository.close()
+
+    assert comparison.status == "complete"
+    assert comparison.wall_origin_quality == "run_preinit"
+    assert comparison.series[0].points[0].wall_elapsed_seconds == 0.0
+    assert comparison.series[0].points[1].wall_elapsed_seconds == 1.0
+    assert comparison.series[0].total_dose_mj_cm2 == 2.5
+    assert comparison.series[0].calibration_profile_id == profile.profile_id
+
+
 def test_filter_options_and_complete_numeric_ranges_are_indexed(tmp_path: Path) -> None:
     library = Library(str(tmp_path))
     for index in range(5):
@@ -452,6 +550,74 @@ def test_hdf5_snapshot_is_complete_without_legacy_metadata_and_uses_calibration_
     assert transmitting[0].projection_quality == "next_pulse"
     assert wall_series.points[-1].wall_elapsed_seconds == pytest.approx(0.02)
     assert any(annotation.label == "PREINIT" and annotation.x == 0.0 for annotation in wall_series.annotations)
+
+
+def test_snapshot_browser_excludes_non_authoritative_hdf5_session(tmp_path: Path) -> None:
+    from euv_acquisition.analysis import analyze_pulse
+    from euv_acquisition.models import CaptureConfig, CapturedPulse, PulseRecord, SnapshotCloseReason
+    from euv_acquisition.snapshot import SnapshotStore
+
+    run_uuid = uuid.uuid4()
+    canonical_session = uuid.uuid4()
+    observer_session = uuid.uuid4()
+    config = CaptureConfig(sample_rate_hz=1_000_000.0, window_seconds=4e-6, pretrigger_seconds=1e-6)
+
+    def write_snapshot(path: Path, session_id: uuid.UUID, source_id: str):
+        store = SnapshotStore(path)
+        pulse = np.asarray([0.0, 0.2, 0.2, 0.0], dtype=np.float32)
+        manifest = store.write(
+            [PulseRecord(session_id, 0, CapturedPulse(pulse, 1_000_000_000, 0), analyze_pulse(pulse, config))],
+            config,
+            SnapshotCloseReason.CAPTURE_STOP,
+            source_kind="simulated",
+            source_id=source_id,
+        )
+        return store, manifest
+
+    canonical_store, canonical = write_snapshot(tmp_path / "canonical", canonical_session, "canonical")
+    observer_store, observer = write_snapshot(tmp_path / "observer", observer_session, "observer")
+    library = Library(str(tmp_path))
+    entry = library.create_entry("Mixed captures", "Fixture")
+    entry.set_tag("experiment", "exposure")
+    entry.set_tag("run", run_uuid.hex)
+    with entry.resource(canonical.filename, "euv_snapshot", "wb") as resource:
+        resource.write(canonical_store.path_for(canonical).read_bytes())
+    with entry.resource(observer.filename, "euv_snapshot", "wb") as resource:
+        resource.write(observer_store.path_for(observer).read_bytes())
+    with entry.resource("euv_capture_session.json", "euv_capture_session", "w") as resource:
+        json.dump(
+            {
+                "session_id": str(canonical_session),
+                "source_kind": "simulated",
+                "source_id": "canonical",
+            },
+            resource,
+        )
+    library.close()
+
+    repository = ExperimentBrowserRepository(ExperimentBrowserConfig(str(tmp_path)))
+    repository.start()
+    try:
+        detail = repository.get_detail(run_uuid)
+        with pytest.raises(repository_module.ExperimentNotFoundError):
+            repository.get_snapshot_analysis(run_uuid, observer.snapshot_id)
+    finally:
+        repository.close()
+
+    assert tuple(snapshot.snapshot_id for snapshot in detail.snapshots) == (canonical.snapshot_id,)
+
+    (tmp_path / entry.get_foldername() / canonical.filename).unlink()
+    repository = ExperimentBrowserRepository(ExperimentBrowserConfig(str(tmp_path)))
+    repository.start()
+    try:
+        unavailable_detail = repository.get_detail(run_uuid)
+        with pytest.raises(ExperimentIntegrityError):
+            repository.get_snapshot_analysis(run_uuid, observer.snapshot_id)
+    finally:
+        repository.close()
+
+    assert unavailable_detail.snapshots == ()
+    assert any(issue.kind == "unavailable" for issue in unavailable_detail.issues)
 
 
 def test_slow_snapshot_analysis_does_not_block_index_queries(tmp_path: Path) -> None:

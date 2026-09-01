@@ -34,6 +34,7 @@ from ipi_webview.api.models import (
     LogFiltersResponse,
     LogPageResponse,
     LiveResponse,
+    ObserverDoseComparisonResponse,
     RegisteredResourceResponse,
     RunDoseSeriesResponse,
     SnapshotResponse,
@@ -500,6 +501,71 @@ def create_app(
         except Exception as exc:
             raise _experiment_error_to_http(exc) from exc
         return _run_dose_series_response(series)
+
+    @app.get(
+        "/api/v1/experiments/{run_id}/observer-dose-series",
+        response_model=ObserverDoseComparisonResponse,
+    )
+    def get_observer_dose_series(
+        run_id: UUID,
+        resolution: str = Query(default="full", pattern="^(full|thumbnail)$"),
+    ) -> ObserverDoseComparisonResponse:
+        try:
+            comparison = experiment_repository.get_observer_dose_comparison(
+                run_id,
+                resolution=resolution,
+            )
+        except Exception as exc:
+            raise _experiment_error_to_http(exc) from exc
+        return ObserverDoseComparisonResponse(
+            run_id=comparison.run_id,
+            status=comparison.status,
+            series=tuple(
+                {
+                    "session_id": series.session_id,
+                    "source_kind": series.source_kind,
+                    "source_id": series.source_id,
+                    "algorithm": series.algorithm,
+                    "algorithm_version": series.algorithm_version,
+                    "status": series.status,
+                    "points": tuple(
+                        {
+                            "wall_elapsed_seconds": point.wall_elapsed_seconds,
+                            "dose_increment_mj_cm2": point.dose_increment_mj_cm2,
+                            "cumulative_dose_mj_cm2": point.cumulative_dose_mj_cm2,
+                            "source_sequence": point.source_sequence,
+                            "represented_pulse_count": point.represented_pulse_count,
+                        }
+                        for point in series.points
+                    ),
+                    "raw_point_count": series.raw_point_count,
+                    "pulse_count": series.pulse_count,
+                    "transfer_count": series.transfer_count,
+                    "total_dose_mj_cm2": series.total_dose_mj_cm2,
+                    "average_pulse_dose_mj_cm2": series.average_pulse_dose_mj_cm2,
+                    "calibration_profile_id": series.calibration_profile_id,
+                    "calibration_revision": series.calibration_revision,
+                    "calibration_name": series.calibration_name,
+                    "calibration_hash": series.calibration_hash,
+                    "completeness": {
+                        "snapshot_count": series.completeness.snapshot_count,
+                        "included_snapshot_count": series.completeness.included_snapshot_count,
+                        "excluded_snapshot_count": series.completeness.excluded_snapshot_count,
+                        "unknown_eligibility_snapshot_count": (
+                            series.completeness.unknown_eligibility_snapshot_count
+                        ),
+                        "unknown_step_mode_snapshot_count": (
+                            series.completeness.unknown_step_mode_snapshot_count
+                        ),
+                    },
+                    "issues": series.issues,
+                }
+                for series in comparison.series
+            ),
+            errors=comparison.errors,
+            resolution=comparison.resolution,
+            wall_origin_quality=comparison.wall_origin_quality,
+        )
 
     @app.post("/api/v1/experiments/{run_id}/dose-series/ensure", response_model=RunDoseSeriesResponse)
     def ensure_run_dose_series(

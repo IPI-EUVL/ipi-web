@@ -176,6 +176,109 @@ def test_exposure_events_route_returns_historical_empty_and_journaled_timelines(
     ]
 
 
+def test_observer_dose_series_route_preserves_source_algorithm_and_completeness(tmp_path: Path) -> None:
+    from ipi_webview.experiments.models import (
+        ObserverDoseComparison,
+        ObserverDoseCompleteness,
+        ObserverDosePoint,
+        ObserverDoseSeries,
+    )
+
+    run_id = uuid.uuid4()
+    session_id = uuid.uuid4()
+    profile_id = uuid.uuid4()
+    completeness = ObserverDoseCompleteness(2, 2, 0, 1, 1)
+    points = (
+        ObserverDosePoint(0.0, 0.0, 0.0, None, 0),
+        ObserverDosePoint(1.5, 0.25, 0.25, 249, 250),
+    )
+    comparison = ObserverDoseComparison(
+        run_id,
+        "complete",
+        (
+            ObserverDoseSeries(
+                session_id,
+                "siglent",
+                "scope-1",
+                "captured",
+                "siglent-captured-v1-native-integral-sum",
+                "complete",
+                points,
+                250,
+                250,
+                2,
+                0.25,
+                0.001,
+                profile_id,
+                3,
+                "Siglent calibration",
+                "a" * 64,
+                ObserverDoseCompleteness(2, 2, 0, 0, 0),
+                (),
+            ),
+            ObserverDoseSeries(
+                session_id,
+                "siglent",
+                "scope-1",
+                "legacy_compensated",
+                "legacy-siglent-v1-sequence-gap-compensation",
+                "incomplete",
+                points,
+                2,
+                500,
+                2,
+                2.5,
+                0.001,
+                profile_id,
+                1,
+                "Legacy Siglent Dose Calibration",
+                "b" * 64,
+                completeness,
+                ("One transfer lacks timing context.",),
+            ),
+        ),
+        (),
+        "full",
+        "run_preinit",
+    )
+
+    class _Repository:
+        def start(self) -> None:
+            pass
+
+        def close(self) -> None:
+            pass
+
+        def get_observer_dose_comparison(self, requested_run_id, *, resolution):
+            assert requested_run_id == run_id
+            assert resolution == "full"
+            return comparison
+
+    app = create_app(
+        ApiSettings(data_path=str(tmp_path), trusted_hosts="testserver", docs_enabled=False, _env_file=None),
+        source=FakeSource(),
+        experiment_repository=_Repository(),
+    )
+    with TestClient(app) as client:
+        response = client.get(f"/api/v1/experiments/{run_id}/observer-dose-series")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["schema_version"] == "1"
+    assert body["wall_origin_quality"] == "run_preinit"
+    assert [series["algorithm"] for series in body["series"]] == ["captured", "legacy_compensated"]
+    assert body["series"][0]["calibration_profile_id"] == str(profile_id)
+    assert body["series"][0]["total_dose_mj_cm2"] == 0.25
+    assert body["series"][1]["status"] == "incomplete"
+    assert body["series"][1]["completeness"] == {
+        "snapshot_count": 2,
+        "included_snapshot_count": 2,
+        "excluded_snapshot_count": 0,
+        "unknown_eligibility_snapshot_count": 1,
+        "unknown_step_mode_snapshot_count": 1,
+    }
+
+
 def test_snapshot_analysis_route_backfills_registered_metadata(tmp_path: Path) -> None:
     run_uuid = uuid.uuid4()
     snapshot_uuid = uuid.uuid4()

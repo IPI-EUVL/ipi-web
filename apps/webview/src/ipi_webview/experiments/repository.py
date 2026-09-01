@@ -17,7 +17,9 @@ from uuid import UUID
 from ipi_ecs.db.db_library import Library
 from ipi_ecs.subsystems.experiment_controller import ExperimentReader
 from ipi_ecs.subsystems.run_events import RunEvent, RunEventTimeline, load_run_event_timeline
+from chamber_ctl.data.dose_analysis import hdf5_snapshot_session_id, resolve_authoritative_hdf5_session
 from chamber_ctl.data.exposure_graph import ExposureGraph, ExposureGraphError, ExposureGraphValidationError, ensure_exposure_graph, read_exposure_graph
+from chamber_ctl.data.observer_analysis import load_observer_dose_products
 
 from ipi_webview.experiments.export import ExperimentExportArchive, build_experiment_zip
 from ipi_webview.experiments.models import (
@@ -34,6 +36,10 @@ from ipi_webview.experiments.models import (
     GraphAnnotation,
     LogRangeSummary,
     MetricMeasurement,
+    ObserverDoseComparison,
+    ObserverDoseCompleteness,
+    ObserverDosePoint,
+    ObserverDoseSeries,
     RegisteredResource,
     RunDosePoint,
     RunDoseSeries,
@@ -590,6 +596,71 @@ def _snapshot_summaries(resources: tuple[RegisteredResource, ...]) -> tuple[Snap
     return snapshots
 
 
+def _canonical_snapshot_inventory(
+    entry: Any,
+    resources: tuple[RegisteredResource, ...],
+) -> tuple[tuple[SnapshotSummary, ...], tuple[ExperimentDataIssue, ...]]:
+    snapshots, issues = _snapshot_inventory(resources)
+    native = tuple(snapshot for snapshot in snapshots if snapshot.snapshot_format == "euv_hdf5")
+    if not native:
+        return snapshots, issues
+    resource_types = {resource.name: resource.resource_type for resource in resources}
+    try:
+        authoritative_session = resolve_authoritative_hdf5_session(entry, resource_types)
+    except OSError as exc:
+        return (
+            tuple(snapshot for snapshot in snapshots if snapshot.snapshot_format != "euv_hdf5"),
+            issues + (
+                ExperimentDataIssue(
+                    "snapshots",
+                    None,
+                    "unavailable",
+                    f"Authoritative capture provenance is unavailable: {exc}",
+                ),
+            ),
+        )
+    except ValueError as exc:
+        return (
+            tuple(snapshot for snapshot in snapshots if snapshot.snapshot_format != "euv_hdf5"),
+            issues + (
+                ExperimentDataIssue(
+                    "snapshots",
+                    "euv_capture_session.json",
+                    "integrity",
+                    f"Authoritative capture provenance is invalid: {exc}",
+                ),
+            ),
+        )
+    if authoritative_session is None:
+        return snapshots, issues
+    selected = []
+    for snapshot in snapshots:
+        if snapshot.snapshot_format != "euv_hdf5" or not snapshot.waveform.available:
+            selected.append(snapshot)
+            continue
+        try:
+            with entry.resource(snapshot.waveform.name, _HDF5_SNAPSHOT_RESOURCE_TYPE, "rb") as resource:
+                session_id = hdf5_snapshot_session_id(
+                    resource.read(),
+                    filename=snapshot.waveform.name,
+                )
+        except (OSError, ValueError) as exc:
+            return (
+                tuple(item for item in snapshots if item.snapshot_format != "euv_hdf5"),
+                issues + (
+                    ExperimentDataIssue(
+                        "snapshots",
+                        snapshot.waveform.name,
+                        "integrity",
+                        f"Native snapshot source identity is invalid: {exc}",
+                    ),
+                ),
+            )
+        if session_id == authoritative_session:
+            selected.append(snapshot)
+    return tuple(selected), issues
+
+
 def _capture_timeline_points(
     entry: Any,
     resources: tuple[RegisteredResource, ...],
@@ -913,6 +984,97 @@ class ExperimentBrowserRepository:
             raise ValueError("Run dose-series resolution must be full or thumbnail.")
         record = self._invoke(lambda reader: self._find_record(reader, run_id))
         return self._read_persisted_run_dose_series(run_id, record, time_mode=time_mode, resolution=resolution)
+
+    def get_observer_dose_comparison(
+        self,
+        run_id: UUID,
+        *,
+        resolution: str = "full",
+    ) -> ObserverDoseComparison:
+        if not isinstance(run_id, UUID):
+            raise ValueError("Exposure run ID must be a UUID.")
+        if resolution not in {"full", "thumbnail"}:
+            raise ValueError("Observer dose-series resolution must be full or thumbnail.")
+        record = self._invoke(lambda reader: self._find_record(reader, run_id))
+        entry = record.get_record()
+        try:
+            products = load_observer_dose_products(entry, self.config.data_path, run_id)
+        except ValueError as exc:
+            raise ExperimentIntegrityError(f"Observer dose products are invalid: {exc}") from exc
+        if not products:
+            return ObserverDoseComparison(run_id, "missing", (), (), resolution, "unavailable")
+        try:
+            event_data = _run_event_data(record)
+            wall_origin = event_data.wall_time_origin_unix_ns
+        except ValueError:
+            wall_origin = None
+        if wall_origin is None:
+            wall_origin = min(
+                int((product.graph.full if resolution == "full" else product.graph.thumbnail).wall_unix_ns[0])
+                for product in products
+            )
+            wall_origin_quality = "observer_first_capture"
+            alignment_issue = (
+                "Observer wall time starts at the first observer capture because PREINIT timing is unavailable.",
+            )
+        else:
+            wall_origin_quality = "run_preinit"
+            alignment_issue = ()
+        series = []
+        for product in products:
+            analysis = product.analysis
+            level = product.graph.full if resolution == "full" else product.graph.thumbnail
+            points = tuple(
+                ObserverDosePoint(
+                    wall_elapsed_seconds=max(0.0, (int(level.wall_unix_ns[index]) - wall_origin) / 1e9),
+                    dose_increment_mj_cm2=float(level.dose_increment_mj_cm2[index]),
+                    cumulative_dose_mj_cm2=float(level.cumulative_dose_mj_cm2[index]),
+                    source_sequence=(
+                        None if int(level.source_sequence[index]) < 0 else int(level.source_sequence[index])
+                    ),
+                    represented_pulse_count=int(level.represented_pulse_count[index]),
+                )
+                for index in range(level.point_count)
+            )
+            completeness = analysis.completeness
+            series.append(
+                ObserverDoseSeries(
+                    session_id=analysis.session_id,
+                    source_kind=analysis.source_key.source_kind,
+                    source_id=analysis.source_key.source_id,
+                    algorithm=analysis.algorithm,
+                    algorithm_version=analysis.algorithm_version,
+                    status=analysis.status,
+                    points=points,
+                    raw_point_count=product.graph.raw_point_count,
+                    pulse_count=analysis.pulse_count,
+                    transfer_count=analysis.transfer_count,
+                    total_dose_mj_cm2=analysis.total_dose_mj_cm2,
+                    average_pulse_dose_mj_cm2=analysis.average_pulse_dose_mj_cm2,
+                    calibration_profile_id=analysis.calibration.profile_id,
+                    calibration_revision=analysis.calibration.revision,
+                    calibration_name=analysis.calibration.name,
+                    calibration_hash=analysis.calibration.content_hash,
+                    completeness=ObserverDoseCompleteness(**completeness.to_dict()),
+                    issues=analysis.issues + alignment_issue,
+                )
+            )
+        series.sort(
+            key=lambda item: (
+                item.source_kind,
+                item.source_id,
+                str(item.session_id),
+                0 if item.algorithm == "captured" else 1,
+            )
+        )
+        return ObserverDoseComparison(
+            run_id,
+            "complete",
+            tuple(series),
+            (),
+            resolution,
+            wall_origin_quality,
+        )
 
     def ensure_run_dose_series(
         self,
@@ -1408,7 +1570,7 @@ class ExperimentBrowserRepository:
         except ExperimentIntegrityError as exc:
             settings = {}
             issues.append(ExperimentDataIssue("settings", "run.json", "malformed", str(exc)))
-        snapshots, snapshot_issues = _snapshot_inventory(resources)
+        snapshots, snapshot_issues = _canonical_snapshot_inventory(entry, resources)
         issues.extend(snapshot_issues)
         try:
             capture_timeline = _capture_timeline_points(entry, resources, self.config)
@@ -1490,7 +1652,9 @@ class ExperimentBrowserRepository:
     ) -> _SnapshotPaths:
         entry = record.get_record()
         resources = _registered_resources(entry, self.config)
-        snapshots = _snapshot_summaries(resources)
+        snapshots, snapshot_issues = _canonical_snapshot_inventory(entry, resources)
+        if snapshot_issues:
+            raise ExperimentIntegrityError(" ".join(issue.message for issue in snapshot_issues))
         snapshot = next((candidate for candidate in snapshots if candidate.snapshot_id == snapshot_id), None)
         if snapshot is None:
             raise ExperimentNotFoundError("Exposure snapshot was not found.")

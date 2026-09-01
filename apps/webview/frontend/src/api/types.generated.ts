@@ -157,6 +157,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/experiments/{run_id}/observer-dose-series": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Observer Dose Series */
+        get: operations["get_observer_dose_series_api_v1_experiments__run_id__observer_dose_series_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/experiments/{run_id}/resources": {
         parameters: {
             query?: never;
@@ -1089,6 +1106,115 @@ export interface components {
             /** Thickness Nm */
             thickness_nm: number;
         };
+        /** ObserverDoseComparisonResponse */
+        ObserverDoseComparisonResponse: {
+            /** Errors */
+            errors: string[];
+            /**
+             * Resolution
+             * @enum {string}
+             */
+            resolution: "full" | "thumbnail";
+            /**
+             * Run Id
+             * Format: uuid
+             */
+            run_id: string;
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             */
+            schema_version: "1";
+            /** Series */
+            series: components["schemas"]["ObserverDoseSeriesResponse"][];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "missing" | "complete";
+            /**
+             * Wall Origin Quality
+             * @enum {string}
+             */
+            wall_origin_quality: "unavailable" | "observer_first_capture" | "run_preinit";
+        };
+        /** ObserverDoseCompletenessResponse */
+        ObserverDoseCompletenessResponse: {
+            /** Excluded Snapshot Count */
+            excluded_snapshot_count: number;
+            /** Included Snapshot Count */
+            included_snapshot_count: number;
+            /** Snapshot Count */
+            snapshot_count: number;
+            /** Unknown Eligibility Snapshot Count */
+            unknown_eligibility_snapshot_count: number;
+            /** Unknown Step Mode Snapshot Count */
+            unknown_step_mode_snapshot_count: number;
+        };
+        /** ObserverDosePointResponse */
+        ObserverDosePointResponse: {
+            /** Cumulative Dose Mj Cm2 */
+            cumulative_dose_mj_cm2: number;
+            /** Dose Increment Mj Cm2 */
+            dose_increment_mj_cm2: number;
+            /** Represented Pulse Count */
+            represented_pulse_count: number;
+            /** Source Sequence */
+            source_sequence?: number | null;
+            /** Wall Elapsed Seconds */
+            wall_elapsed_seconds: number;
+        };
+        /** ObserverDoseSeriesResponse */
+        ObserverDoseSeriesResponse: {
+            /**
+             * Algorithm
+             * @enum {string}
+             */
+            algorithm: "captured" | "legacy_compensated";
+            /** Algorithm Version */
+            algorithm_version: string;
+            /** Average Pulse Dose Mj Cm2 */
+            average_pulse_dose_mj_cm2: number;
+            /** Calibration Hash */
+            calibration_hash: string;
+            /** Calibration Name */
+            calibration_name: string;
+            /**
+             * Calibration Profile Id
+             * Format: uuid
+             */
+            calibration_profile_id: string;
+            /** Calibration Revision */
+            calibration_revision: number;
+            completeness: components["schemas"]["ObserverDoseCompletenessResponse"];
+            /** Issues */
+            issues: string[];
+            /** Points */
+            points: components["schemas"]["ObserverDosePointResponse"][];
+            /** Pulse Count */
+            pulse_count: number;
+            /** Raw Point Count */
+            raw_point_count: number;
+            /**
+             * Session Id
+             * Format: uuid
+             */
+            session_id: string;
+            /** Source Id */
+            source_id: string;
+            /** Source Kind */
+            source_kind: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "complete" | "incomplete";
+            /** Total Dose Mj Cm2 */
+            total_dose_mj_cm2: number;
+            /** Transfer Count */
+            transfer_count: number;
+        };
         /**
          * ProgressMode
          * @enum {string}
@@ -1652,6 +1778,39 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExperimentMetricsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_observer_dose_series_api_v1_experiments__run_id__observer_dose_series_get: {
+        parameters: {
+            query?: {
+                resolution?: string;
+            };
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ObserverDoseComparisonResponse"];
                 };
             };
             /** @description Validation Error */

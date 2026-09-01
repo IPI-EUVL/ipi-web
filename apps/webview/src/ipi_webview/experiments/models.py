@@ -238,6 +238,56 @@ class RunDoseSeries:
 
 
 @dataclass(frozen=True, slots=True)
+class ObserverDosePoint:
+    wall_elapsed_seconds: float
+    dose_increment_mj_cm2: float
+    cumulative_dose_mj_cm2: float
+    source_sequence: int | None
+    represented_pulse_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class ObserverDoseCompleteness:
+    snapshot_count: int
+    included_snapshot_count: int
+    excluded_snapshot_count: int
+    unknown_eligibility_snapshot_count: int
+    unknown_step_mode_snapshot_count: int
+
+
+@dataclass(frozen=True, slots=True)
+class ObserverDoseSeries:
+    session_id: UUID
+    source_kind: str
+    source_id: str
+    algorithm: str
+    algorithm_version: str
+    status: str
+    points: tuple[ObserverDosePoint, ...]
+    raw_point_count: int
+    pulse_count: int
+    transfer_count: int
+    total_dose_mj_cm2: float
+    average_pulse_dose_mj_cm2: float
+    calibration_profile_id: UUID
+    calibration_revision: int
+    calibration_name: str
+    calibration_hash: str
+    completeness: ObserverDoseCompleteness
+    issues: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ObserverDoseComparison:
+    run_id: UUID
+    status: str
+    series: tuple[ObserverDoseSeries, ...]
+    errors: tuple[str, ...]
+    resolution: str
+    wall_origin_quality: str
+
+
+@dataclass(frozen=True, slots=True)
 class LogRangeSummary:
     event_id: str
     created_at: float | None

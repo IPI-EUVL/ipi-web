@@ -149,6 +149,46 @@ export type RunDoseSeries = {
   annotations: GraphAnnotation[]
   issues: string[]
 }
+export type ObserverDoseComparison = {
+  schema_version: '1'
+  run_id: string
+  status: 'missing' | 'complete'
+  series: {
+    session_id: string
+    source_kind: string
+    source_id: string
+    algorithm: 'captured' | 'legacy_compensated'
+    algorithm_version: string
+    status: 'complete' | 'incomplete'
+    points: {
+      wall_elapsed_seconds: number
+      dose_increment_mj_cm2: number
+      cumulative_dose_mj_cm2: number
+      source_sequence: number | null
+      represented_pulse_count: number
+    }[]
+    raw_point_count: number
+    pulse_count: number
+    transfer_count: number
+    total_dose_mj_cm2: number
+    average_pulse_dose_mj_cm2: number
+    calibration_profile_id: string
+    calibration_revision: number
+    calibration_name: string
+    calibration_hash: string
+    completeness: {
+      snapshot_count: number
+      included_snapshot_count: number
+      excluded_snapshot_count: number
+      unknown_eligibility_snapshot_count: number
+      unknown_step_mode_snapshot_count: number
+    }
+    issues: string[]
+  }[]
+  errors: string[]
+  resolution: RunGraphResolution
+  wall_origin_quality: 'unavailable' | 'observer_first_capture' | 'run_preinit'
+}
 export type ExposureEventTimeline = {
   schema_version: '1'
   run_id: string
@@ -337,6 +377,29 @@ export function ensureRunDoseSeries(
 ) {
   const params = new URLSearchParams({ time_mode: timeMode, resolution })
   return postJson<RunDoseSeries>(`/api/v1/experiments/${encodeURIComponent(runId)}/dose-series/ensure?${params}`, signal, ['3'])
+}
+
+export function fetchObserverDoseComparison(
+  runId: string,
+  resolution: RunGraphResolution = 'full',
+  signal?: AbortSignal,
+) {
+  const params = new URLSearchParams({ resolution })
+  return getJson<ObserverDoseComparison>(
+    `/api/v1/experiments/${encodeURIComponent(runId)}/observer-dose-series?${params}`,
+    signal,
+    ['1'],
+  )
+}
+
+export function useObserverDoseComparison(runId: string, resolution: RunGraphResolution = 'full') {
+  return useQuery({
+    queryKey: ['experiment-observer-dose-series', runId, resolution],
+    queryFn: ({ signal }) => fetchObserverDoseComparison(runId, resolution, signal),
+    enabled: Boolean(runId),
+    staleTime: Number.POSITIVE_INFINITY,
+    retry: 2,
+  })
 }
 
 export function useRunDoseSeries(

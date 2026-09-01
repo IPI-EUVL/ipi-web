@@ -2399,6 +2399,266 @@
         "title": "MetricMeasurementResponse",
         "type": "object"
       },
+      "ObserverDoseComparisonResponse": {
+        "properties": {
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Errors",
+            "type": "array"
+          },
+          "resolution": {
+            "enum": [
+              "full",
+              "thumbnail"
+            ],
+            "title": "Resolution",
+            "type": "string"
+          },
+          "run_id": {
+            "format": "uuid",
+            "title": "Run Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1",
+            "default": "1",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/ObserverDoseSeriesResponse"
+            },
+            "title": "Series",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "missing",
+              "complete"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "wall_origin_quality": {
+            "enum": [
+              "unavailable",
+              "observer_first_capture",
+              "run_preinit"
+            ],
+            "title": "Wall Origin Quality",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "status",
+          "series",
+          "errors",
+          "resolution",
+          "wall_origin_quality"
+        ],
+        "title": "ObserverDoseComparisonResponse",
+        "type": "object"
+      },
+      "ObserverDoseCompletenessResponse": {
+        "properties": {
+          "excluded_snapshot_count": {
+            "minimum": 0.0,
+            "title": "Excluded Snapshot Count",
+            "type": "integer"
+          },
+          "included_snapshot_count": {
+            "minimum": 0.0,
+            "title": "Included Snapshot Count",
+            "type": "integer"
+          },
+          "snapshot_count": {
+            "minimum": 0.0,
+            "title": "Snapshot Count",
+            "type": "integer"
+          },
+          "unknown_eligibility_snapshot_count": {
+            "minimum": 0.0,
+            "title": "Unknown Eligibility Snapshot Count",
+            "type": "integer"
+          },
+          "unknown_step_mode_snapshot_count": {
+            "minimum": 0.0,
+            "title": "Unknown Step Mode Snapshot Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "snapshot_count",
+          "included_snapshot_count",
+          "excluded_snapshot_count",
+          "unknown_eligibility_snapshot_count",
+          "unknown_step_mode_snapshot_count"
+        ],
+        "title": "ObserverDoseCompletenessResponse",
+        "type": "object"
+      },
+      "ObserverDosePointResponse": {
+        "properties": {
+          "cumulative_dose_mj_cm2": {
+            "title": "Cumulative Dose Mj Cm2",
+            "type": "number"
+          },
+          "dose_increment_mj_cm2": {
+            "title": "Dose Increment Mj Cm2",
+            "type": "number"
+          },
+          "represented_pulse_count": {
+            "minimum": 0.0,
+            "title": "Represented Pulse Count",
+            "type": "integer"
+          },
+          "source_sequence": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Sequence"
+          },
+          "wall_elapsed_seconds": {
+            "minimum": 0.0,
+            "title": "Wall Elapsed Seconds",
+            "type": "number"
+          }
+        },
+        "required": [
+          "wall_elapsed_seconds",
+          "dose_increment_mj_cm2",
+          "cumulative_dose_mj_cm2",
+          "represented_pulse_count"
+        ],
+        "title": "ObserverDosePointResponse",
+        "type": "object"
+      },
+      "ObserverDoseSeriesResponse": {
+        "properties": {
+          "algorithm": {
+            "enum": [
+              "captured",
+              "legacy_compensated"
+            ],
+            "title": "Algorithm",
+            "type": "string"
+          },
+          "algorithm_version": {
+            "title": "Algorithm Version",
+            "type": "string"
+          },
+          "average_pulse_dose_mj_cm2": {
+            "title": "Average Pulse Dose Mj Cm2",
+            "type": "number"
+          },
+          "calibration_hash": {
+            "title": "Calibration Hash",
+            "type": "string"
+          },
+          "calibration_name": {
+            "title": "Calibration Name",
+            "type": "string"
+          },
+          "calibration_profile_id": {
+            "format": "uuid",
+            "title": "Calibration Profile Id",
+            "type": "string"
+          },
+          "calibration_revision": {
+            "minimum": 1.0,
+            "title": "Calibration Revision",
+            "type": "integer"
+          },
+          "completeness": {
+            "$ref": "#/components/schemas/ObserverDoseCompletenessResponse"
+          },
+          "issues": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/ObserverDosePointResponse"
+            },
+            "title": "Points",
+            "type": "array"
+          },
+          "pulse_count": {
+            "minimum": 0.0,
+            "title": "Pulse Count",
+            "type": "integer"
+          },
+          "raw_point_count": {
+            "minimum": 0.0,
+            "title": "Raw Point Count",
+            "type": "integer"
+          },
+          "session_id": {
+            "format": "uuid",
+            "title": "Session Id",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_kind": {
+            "title": "Source Kind",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "complete",
+              "incomplete"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "total_dose_mj_cm2": {
+            "title": "Total Dose Mj Cm2",
+            "type": "number"
+          },
+          "transfer_count": {
+            "minimum": 0.0,
+            "title": "Transfer Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "session_id",
+          "source_kind",
+          "source_id",
+          "algorithm",
+          "algorithm_version",
+          "status",
+          "points",
+          "raw_point_count",
+          "pulse_count",
+          "transfer_count",
+          "total_dose_mj_cm2",
+          "average_pulse_dose_mj_cm2",
+          "calibration_profile_id",
+          "calibration_revision",
+          "calibration_name",
+          "calibration_hash",
+          "completeness",
+          "issues"
+        ],
+        "title": "ObserverDoseSeriesResponse",
+        "type": "object"
+      },
       "ProgressMode": {
         "enum": [
           "none",
@@ -3803,6 +4063,57 @@
           }
         },
         "summary": "Get Experiment Metrics"
+      }
+    },
+    "/api/v1/experiments/{run_id}/observer-dose-series": {
+      "get": {
+        "operationId": "get_observer_dose_series_api_v1_experiments__run_id__observer_dose_series_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "resolution",
+            "required": false,
+            "schema": {
+              "default": "full",
+              "pattern": "^(full|thumbnail)$",
+              "title": "Resolution",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObserverDoseComparisonResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Observer Dose Series"
       }
     },
     "/api/v1/experiments/{run_id}/resources": {
