@@ -375,6 +375,8 @@ class RunDoseSeriesResponse(ApiModel):
     time_mode: Literal["runtime", "wall"]
     annotations: tuple[GraphAnnotationResponse, ...]
     issues: tuple[str, ...]
+    source_kind: str | None = None
+    source_id: str | None = None
 
 
 class ObserverDosePointResponse(ApiModel):

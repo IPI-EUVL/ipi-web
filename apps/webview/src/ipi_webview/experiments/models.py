@@ -235,6 +235,8 @@ class RunDoseSeries:
     time_mode: str = "runtime"
     annotations: tuple[GraphAnnotation, ...] = ()
     issues: tuple[str, ...] = ()
+    source_kind: str | None = None
+    source_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)

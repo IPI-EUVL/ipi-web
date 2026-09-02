@@ -1201,6 +1201,8 @@ class ExperimentBrowserRepository:
             time_mode=time_mode,
             annotations=annotations,
             issues=issues,
+            source_kind=None if graph.source_key is None else graph.source_key.source_kind,
+            source_id=None if graph.source_key is None else graph.source_key.source_id,
         )
 
     def get_snapshot_analysis(self, run_id: UUID, snapshot_id: UUID) -> SnapshotAnalysisSummary:

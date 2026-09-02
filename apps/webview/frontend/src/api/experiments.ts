@@ -148,6 +148,8 @@ export type RunDoseSeries = {
   time_mode: RunTimeMode
   annotations: GraphAnnotation[]
   issues: string[]
+  source_kind: string | null
+  source_id: string | null
 }
 export type ObserverDoseComparison = {
   schema_version: '1'

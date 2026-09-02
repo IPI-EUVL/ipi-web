@@ -1318,6 +1318,10 @@ export interface components {
              * @constant
              */
             source: "persisted";
+            /** Source Id */
+            source_id?: string | null;
+            /** Source Kind */
+            source_kind?: string | null;
             /**
              * Status
              * @enum {string}

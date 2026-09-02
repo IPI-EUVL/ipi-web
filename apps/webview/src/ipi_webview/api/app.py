@@ -625,6 +625,8 @@ def create_app(
                 for annotation in series.annotations
             ),
             issues=series.issues,
+            source_kind=series.source_kind,
+            source_id=series.source_id,
         )
 
     @app.get(
