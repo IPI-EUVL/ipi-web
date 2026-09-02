@@ -79,6 +79,8 @@ const runSeries = {
   time_mode: 'runtime',
   annotations: [],
   issues: [],
+  source_kind: 'red_pitaya',
+  source_id: 'red-pitaya',
 } satisfies RunDoseSeries
 
 const comparison = {
@@ -175,7 +177,7 @@ test.beforeEach(async ({ page }) => {
 test('comparison remains usable at desktop and mobile widths', async ({ page }, testInfo) => {
   await page.goto(`/experiments/${runId}`)
   await page.getByRole('button', { name: 'Snapshots' }).click()
-  await expect(page.getByRole('heading', { name: 'Canonical and observer dose' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Primary and observer dose' })).toBeVisible()
   await expect(page.getByText('Siglent scope-1 r2')).toBeVisible()
   await expect(page.getByText('Historical Siglent constants r1')).toBeVisible()
   await expect(page.locator('.dose-comparison-chart canvas')).toHaveCount(1)

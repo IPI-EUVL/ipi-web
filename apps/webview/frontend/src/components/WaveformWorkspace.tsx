@@ -42,7 +42,7 @@ function algorithmLabel(algorithm: ObserverSeries['algorithm']): string {
 }
 
 function deltaLabel(value: number, canonical: number | null): string {
-  if (canonical === null) return 'Canonical total unavailable'
+  if (canonical === null) return 'Primary total unavailable'
   const delta = value - canonical
   const sign = delta > 0 ? '+' : ''
   if (canonical === 0) return `${sign}${format(delta)} mJ/cm²`
@@ -152,19 +152,30 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
     () => (observerComparison.data?.series ?? []).filter((item) => observerSourceKey(item) === selectedObserverSource),
     [observerComparison.data?.series, selectedObserverSource],
   )
+  const alternateObserverSeries = useMemo(
+    () => selectedObserverSeries.filter((item) => !(
+      item.algorithm === 'captured'
+      && item.source_kind === runSeries.data?.source_kind
+      && item.source_id === runSeries.data?.source_id
+    )),
+    [runSeries.data?.source_id, runSeries.data?.source_kind, selectedObserverSeries],
+  )
+  const primarySourceLabel = runSeries.data?.source_kind && runSeries.data.source_id
+    ? `${runSeries.data.source_kind} / ${runSeries.data.source_id}`
+    : 'Legacy primary source'
   const comparisonLines = useMemo<DoseComparisonLine[]>(() => {
     const lines: DoseComparisonLine[] = []
     const canonicalPoints = runSeries.data?.points ?? []
     if (canonicalPoints.length > 0) {
       lines.push({
         key: 'canonical',
-        label: 'Red Pitaya canonical',
+        label: `${primarySourceLabel} primary`,
         color: '#59c8e8',
         x: canonicalPoints.map((point) => point.wall_elapsed_seconds),
         y: canonicalPoints.map((point) => point.cumulative_dose_mj_cm2),
       })
     }
-    for (const item of selectedObserverSeries) {
+    for (const item of alternateObserverSeries) {
       if (!visibleObserverAlgorithms.has(item.algorithm)) continue
       lines.push({
         key: `${item.session_id}:${item.algorithm}`,
@@ -176,7 +187,7 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
       })
     }
     return lines
-  }, [runSeries.data?.points, selectedObserverSeries, visibleObserverAlgorithms])
+  }, [alternateObserverSeries, primarySourceLabel, runSeries.data?.points, visibleObserverAlgorithms])
   const canonicalTotal = runSeries.data?.points.at(-1)?.cumulative_dose_mj_cm2 ?? null
 
   const toggleCategory = (category: GraphAnnotationCategory) => {
@@ -251,7 +262,7 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
 
       <section className="inter-snapshot-panel dose-comparison-panel">
         <div className="inter-snapshot-heading">
-          <div><p className="eyebrow">Source comparison</p><h2>Canonical and observer dose</h2></div>
+          <div><p className="eyebrow">Source comparison</p><h2>Primary and observer dose</h2></div>
           {observerSources.length > 0 && <div className="dose-comparison-controls">
             <label>Observer source
               <select value={selectedObserverSource ?? ''} onChange={(event) => setSelectedObserverSource(event.target.value || null)}>
@@ -274,19 +285,19 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
         {observerComparison.error && <p className="inline-notice">{observerComparison.error.message}</p>}
         {observerComparison.data?.status === 'missing' && <p className="muted">No observer dose products are attached to this exposure.</p>}
         {comparisonLines.length > 0 && observerComparison.data?.status === 'complete' && <DoseComparisonChart lines={comparisonLines} />}
-        {observerComparison.data?.status === 'complete' && selectedObserverSeries.length > 0 && (
+        {observerComparison.data?.status === 'complete' && alternateObserverSeries.length > 0 && (
           <div className="dose-comparison-table-wrap">
             <table className="dose-comparison-table">
               <thead><tr><th>Series</th><th>Total dose</th><th>Delta</th><th>Calibration</th><th>Completeness</th></tr></thead>
               <tbody>
                 <tr>
-                  <td><strong>Red Pitaya</strong><small>Canonical</small></td>
+                  <td><strong>{primarySourceLabel}</strong><small>Primary</small></td>
                   <td>{canonicalTotal === null ? '--' : `${format(canonicalTotal)} mJ/cm²`}</td>
                   <td>Reference</td>
-                  <td>Active canonical analysis</td>
-                  <td>Authoritative</td>
+                  <td>Selected primary analysis</td>
+                  <td>Primary</td>
                 </tr>
-                {selectedObserverSeries.map((item) => (
+                {alternateObserverSeries.map((item) => (
                   <tr key={`${item.session_id}:${item.algorithm}`}>
                     <td><strong>{algorithmLabel(item.algorithm)}</strong><small>{item.source_kind} / {item.source_id}</small></td>
                     <td>{format(item.total_dose_mj_cm2)} mJ/cm²</td>
@@ -305,8 +316,8 @@ export function WaveformWorkspace({ detail, runId }: { detail: ExperimentDetail;
             </table>
           </div>
         )}
-        {selectedObserverSeries.flatMap((item) => item.issues).length > 0 && (
-          <p className="inline-notice">{selectedObserverSeries.flatMap((item) => item.issues).join(' ')}</p>
+        {alternateObserverSeries.flatMap((item) => item.issues).length > 0 && (
+          <p className="inline-notice">{alternateObserverSeries.flatMap((item) => item.issues).join(' ')}</p>
         )}
       </section>
     </div>
